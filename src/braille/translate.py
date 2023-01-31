@@ -37,11 +37,11 @@ def translate(text: str):
     # 공백으로(단어로) 분리
     separated_text = text.split(" ")
 
-    print(f"{Tag}: 약어를 점자로 변경")
-    # 약어를 점자로 변경
-    for i in range(len(separated_text)):
-        if separated_text[i] in brailleDB.abb_word_dict:
-            separated_text[i] = brailleDB.abb_word_dict[separated_text[i]]
+    # print(f"{Tag}: 약어를 점자로 변경")
+    # # 약어를 점자로 변경
+    # for i in range(len(separated_text)):
+    #     if separated_text[i] in brailleDB.abb_word_dict:
+    #         separated_text[i] = brailleDB.abb_word_dict[separated_text[i]]
 
     # 공백 추가 후 문자열 생성
     text = " ".join(separated_text)
@@ -51,20 +51,21 @@ def translate(text: str):
 
     # 글자로 분리
     separated_text = list(text)
+    print(f"{Tag}: separated_text - {separated_text}")
 
-    # 약자 확인
-    # 약자면 변경, 아닐 경우 음절 분리
+    # 한글자씩 번역, 약자일 경우 약자 반영
     for i in range(len(separated_text)):
-        # 약자 변경
-        if separated_text[i] in brailleDB.abb_char_dict:
-            separated_text[i] = brailleDB.abb_char_dict[separated_text[i]]
-        else:   # 약자가 아니면 음절 분리 후 점자 변경
-            if hangul.isHangul(separated_text[i]):
-                separated_text[i] = hangul.Syllabification(separated_text[i])
+        separated_text[i] = hangul.Syllabification(separated_text[i])
+        # # 약자 변경
+        # if separated_text[i] in brailleDB.abb_char_dict:
+        #     separated_text[i] = brailleDB.abb_char_dict[separated_text[i]]
+        # else:   # 약자가 아니면 음절 분리 후 점자 변경
+        #     if hangul.isHangul(separated_text[i]):
+        #         separated_text[i] = hangul.Syllabification(separated_text[i])
+        # print(f"{Tag}: separated_text - {separated_text}")
 
     print("".join(separated_text))
-    print()
     
-translate("그래서 안녕하세요")
-print("⠈⠪⠐⠗⠠⠎⠀⠣⠒⠉⠻⠚⠠⠝⠬")
+translate("과액")
+print("⠈⠧⠤⠗⠁")
 
