@@ -75,6 +75,10 @@ def Syllabification(letter, _cho = True, _jung = True, _jong = True):
         if (chosung == 'ㄱ'): tran.append(brailleDB.abb_char_dict['것'])
         else: tran.append(brailleDB.abb_char_dict['껏'])
         syllables = syllables[3:] # 초성, 중성, 종성 제거, 나머지 있을 수 없음, 빈 리스트
+    # 제16항 "성, 썽, 정, 쩡, 청" 은 "영"의 약자를 적어 나타낸다
+    elif(letter in "성썽정쩡청"):
+        tran.append(brailleDB.han_cho_dict[chosung])
+        tran.append(brailleDB.abb_char_dict['영'])
     # 초성과 중성으로 하는 약자인지 확인 (가까나다따마바빠사싸아자짜카타파하)
     elif(jungsung == 'ㅏ' and chosung in "ㄱㄲㄴㄷㄸㅁㅂㅃㅅㅆㅇㅈㅉㅋㅌㅍㅎ"):
         tran.append(brailleDB.abb_char_dict[chosung])
