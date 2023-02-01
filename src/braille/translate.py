@@ -71,8 +71,8 @@ def translate(text: str):
     return "".join(translated_text)
 
 
-result = translate("만약 당신이 불쾌한 상황에 처해 있다면 새로운 해석을 가미하여 빠져나올 수 있다")
-answer = "⠑⠒⠜⠁⠀⠊⠶⠠⠟⠕⠀⠘⠯⠋⠧⠗⠚⠒⠀⠇⠶⠚⠧⠶⠝⠀⠰⠎⠚⠗⠀⠕⠌⠊⠑⠡⠀⠠⠗⠐⠥⠛⠀⠚⠗⠠⠹⠮⠀⠫⠑⠕⠚⠣⠱⠀⠠⠘⠨⠱⠉⠣⠥⠂⠀⠠⠍⠀⠕⠌⠊"
+result = translate("넓지도 않은 선반에 얹혔을 성냥갑은 얼른 찾아지지 않았다")
+answer = "⠉⠞⠃⠨⠕⠊⠥⠀⠣⠒⠴⠵⠀⠠⠾⠘⠒⠝⠀⠾⠅⠚⠱⠌⠮⠀⠠⠻⠉⠜⠶⠫⠃⠵⠀⠞⠐⠵⠀⠰⠣⠅⠣⠨⠕⠨⠕⠀⠣⠒⠴⠣⠌⠊"
 print(result)
 print(answer)
 
