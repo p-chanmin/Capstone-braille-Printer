@@ -181,5 +181,12 @@ def HangleApplyAbbreviationWords(text):
     # 제 18항 약어 적용
     for abbWord in brailleDB.abb_word_dict:
         text = text.replace(abbWord, brailleDB.abb_word_dict[abbWord])
+        # 제 18항 예외 조항 ("쭈그리고, 우그리고, 오그리고, 찡그리고"의 경우 약어 반영x)
+        if(abbWord == '그리고'):
+            # 다시 원본 문자열로 변환
+            text = text.replace("쭈"+brailleDB.abb_word_dict[abbWord], "쭈그리고")
+            text = text.replace("우" + brailleDB.abb_word_dict[abbWord], "우그리고")
+            text = text.replace("오" + brailleDB.abb_word_dict[abbWord], "오그리고")
+            text = text.replace("찡" + brailleDB.abb_word_dict[abbWord], "찡그리고")
 
     return text
