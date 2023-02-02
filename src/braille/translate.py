@@ -53,19 +53,32 @@ def translate(text: str):
     separated_text = list(text)
     print(f"{Tag}: separated_text - {separated_text}")
 
+    # 번역된 문자 저장될 리스트
+    translated_text = separated_text[:]
+
     # 한글자씩 번역, 약자일 경우 약자 반영
     for i in range(len(separated_text)):
-        separated_text[i] = hangul.Syllabification(separated_text[i])
-        # # 약자 변경
-        # if separated_text[i] in brailleDB.abb_char_dict:
-        #     separated_text[i] = brailleDB.abb_char_dict[separated_text[i]]
-        # else:   # 약자가 아니면 음절 분리 후 점자 변경
-        #     if hangul.isHangul(separated_text[i]):
-        #         separated_text[i] = hangul.Syllabification(separated_text[i])
-        # print(f"{Tag}: separated_text - {separated_text}")
+        # 이전 문자 읽기
+        if (i == 0): prev = None
+        else : prev = separated_text[i-1]
+        # 다음 문자 읽기
+        if (i == len(separated_text) - 1): next = None
+        else: next = separated_text[i+1]
+        # 한글자 씩 번역
+        translated_text[i] = hangul.HangleToBraille(separated_text[i], prev, next)
 
-    print("".join(separated_text))
-    
-translate("과액")
-print("⠈⠧⠤⠗⠁")
+
+    return "".join(translated_text)
+
+
+result = translate("넓지도 않은 선반에 얹혔을 성냥갑은 얼른 찾아지지 않았다")
+answer = "⠉⠞⠃⠨⠕⠊⠥⠀⠣⠒⠴⠵⠀⠠⠾⠘⠒⠝⠀⠾⠅⠚⠱⠌⠮⠀⠠⠻⠉⠜⠶⠫⠃⠵⠀⠞⠐⠵⠀⠰⠣⠅⠣⠨⠕⠨⠕⠀⠣⠒⠴⠣⠌⠊"
+print(result)
+print(answer)
+
+cnt = 0
+for (r, a) in zip(result, answer.replace("⠀", " ")):
+    if (r == a): cnt += 1
+
+print(f"일치율 {cnt / len(result) * 100}")
 
