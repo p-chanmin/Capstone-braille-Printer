@@ -35,28 +35,28 @@ def braille_to_data(braille: str):
 
 def translate(text: str):
     # 공백으로(단어로) 분리
-    separated_text = text.split(" ")
+    # separated_text = text.split(" ")
 
     # print(f"{Tag}: 약어를 점자로 변경")
     # # 약어를 점자로 변경
     # for i in range(len(separated_text)):
     #     if separated_text[i] in brailleDB.abb_word_dict:
     #         separated_text[i] = brailleDB.abb_word_dict[separated_text[i]]
+    #
+    # # 공백 추가 후 문자열 생성
+    # text = " ".join(separated_text)
+    text = hangul.HangleApplyAbbreviationWords(text)
 
-    # 공백 추가 후 문자열 생성
-    text = " ".join(separated_text)
-
-    print(f"{Tag}: text - {text}")
-    print(f"{Tag}: separated_text - {separated_text}")
+    # print(f"{Tag}: 약어 반영 후 text - {text}")
 
     # 글자로 분리
     separated_text = list(text)
-    print(f"{Tag}: separated_text - {separated_text}")
+    # print(f"{Tag}: separated_text - {separated_text}")
 
     # 번역된 문자 저장될 리스트
     translated_text = separated_text[:]
 
-    # 한글자씩 번역, 약자일 경우 약자 반영
+    # 약자를 반영하여 한글자씩 번역
     for i in range(len(separated_text)):
         # 이전 문자 읽기
         if (i == 0): prev = None
@@ -69,16 +69,3 @@ def translate(text: str):
 
 
     return "".join(translated_text)
-
-
-result = translate("넓지도 않은 선반에 얹혔을 성냥갑은 얼른 찾아지지 않았다")
-answer = "⠉⠞⠃⠨⠕⠊⠥⠀⠣⠒⠴⠵⠀⠠⠾⠘⠒⠝⠀⠾⠅⠚⠱⠌⠮⠀⠠⠻⠉⠜⠶⠫⠃⠵⠀⠞⠐⠵⠀⠰⠣⠅⠣⠨⠕⠨⠕⠀⠣⠒⠴⠣⠌⠊"
-print(result)
-print(answer)
-
-cnt = 0
-for (r, a) in zip(result, answer.replace("⠀", " ")):
-    if (r == a): cnt += 1
-
-print(f"일치율 {cnt / len(result) * 100}")
-
