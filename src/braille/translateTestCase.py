@@ -5,29 +5,7 @@
 """
 from src.braille.translate import translate
 
-def testTran():
-    """
-    테스트 케이스에 저장된 문자를 번역하여
-    올바른 점자와 비교,
-        :return: 틀린 번역의 경우, 번역과 올바른 점자를 출력
-    """
-    total = 0
-    for tc in translateTestCase:
-        result = translate(tc)
-        answer = translateTestCase[tc]
-        cnt = 0
-        for (r, a) in zip(result, answer.replace("⠀", " ")):
-            if (r == a): cnt += 1
-        if (cnt == len(result)): total += 1
-        else:
-            print("ERR ===============")
-            print(f"TEST CAST : {tc}")
-            print(f"result : {result}")
-            print(f"answer : {answer}")
-            print("===================")
-    print(f"번역 일치율 {total / len(translateTestCase) * 100}")
-
-
+## 테스트 케이스
 translateTestCase = {
     ## 제1절 제2항
     "아이" : "⠣⠕",
@@ -328,3 +306,28 @@ translateTestCase = {
     # "다리는 오그리고, 얼굴은 찡그리고 앉아 있는 못난이 인형": "⠊⠐⠕⠉⠵⠀⠥⠈⠪⠐⠕⠈⠥⠐⠀⠞⠈⠯⠵⠀⠠⠨⠕⠶⠈⠪⠐⠕⠈⠥⠀⠣⠒⠅⠣⠀⠕⠌⠉⠵⠀⠑⠥⠄⠉⠒⠕⠀⠟⠚⠻",
     # "그는 뜨거운 햇볕에 얼굴을 찡그리고 손수건으로 이마의 땀을 닦았다.": "⠉⠵⠀⠠⠊⠪⠈⠎⠛⠀⠚⠗⠄⠘⠱⠦⠝⠀⠞⠈⠯⠮⠀⠠⠨⠕⠶⠈⠪⠐⠕⠈⠥⠀⠠⠷⠠⠍⠈⠾⠪⠐⠥⠀⠕⠑⠣⠺⠀⠠⠊⠢⠮⠀⠊⠁⠁⠣⠌⠊⠲",
 }
+
+def testTran():
+    """
+    테스트 케이스에 저장된 문자를 번역하여
+    올바른 점자와 비교,
+        :return: 틀린 번역의 경우, 번역과 올바른 점자를 출력
+    """
+    total = 0
+    for tc in translateTestCase:
+        result = translate(tc)
+        answer = translateTestCase[tc]
+        cnt = 0
+        for (r, a) in zip(result, answer.replace("⠀", " ")):
+            if (r == a): cnt += 1
+        if (cnt == len(result)): total += 1
+        else:
+            print("ERR ===============")
+            print(f"TEST CAST : {tc}")
+            print(f"result : {result}")
+            print(f"answer : {answer}")
+            print("===================")
+    print(f"번역 일치율 {total / len(translateTestCase) * 100}")
+
+## 테스트 실행
+testTran()
