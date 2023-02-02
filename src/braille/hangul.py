@@ -31,6 +31,11 @@ def isSpace(letter):
 
 # 한글 음절 분리
 def Syllabification(letter):
+    """
+    한글 문자 1개를 초성, 중성, 종성으로 분리하는 함수
+        :param letter: 입력된 한글 문자 1개
+        :return: 초성, 중성, 종성 순서로 반환,(한글이 아닌 문자나 None이 입력되면 None을 반환)
+    """
     if(letter == None or not isHangul(letter)): return None, None, None
     offset = ord(letter) - ord('가') # index 계산을 위한 offset 설정
     # 음절 분리
@@ -61,11 +66,11 @@ def HangleToBraille(letter, prev, next):
 
     syllables = []  # 분리된 음절이 들어갈 리스트
     tran = [] # 번역된 점자가 들어갈 리스트
-    offset = ord(letter) - ord('가') # index 계산을 위한 offset 설정
 
     if letter == ' ':   # 공백일 경우
         return ' '
 
+    # 초성, 중성, 종성으로 음절 분리
     chosung , jungsung, jongsung = Syllabification(letter)
     prev_cho, prev_jung, prev_jong = Syllabification(prev)
     next_cho, next_jung, next_jong = Syllabification(next)
@@ -171,3 +176,17 @@ def HangleToBraille(letter, prev, next):
         if jongsung is not None: tran.append(brailleDB.han_jong_dict[jongsung])
 
     return "".join(tran)
+
+def HangleApplyAbbreviationWords(text):
+    # 제 18항 약어 적용
+    for abbWord in brailleDB.abb_word_dict:
+        text = text.replace(abbWord, brailleDB.abb_word_dict[abbWord])
+        # 제 18항 예외 조항 ("쭈그리고, 우그리고, 오그리고, 찡그리고"의 경우 약어 반영x)
+        if(abbWord == '그리고'):
+            # 다시 원본 문자열로 변환
+            text = text.replace("쭈"+brailleDB.abb_word_dict[abbWord], "쭈그리고")
+            text = text.replace("우" + brailleDB.abb_word_dict[abbWord], "우그리고")
+            text = text.replace("오" + brailleDB.abb_word_dict[abbWord], "오그리고")
+            text = text.replace("찡" + brailleDB.abb_word_dict[abbWord], "찡그리고")
+
+    return text
