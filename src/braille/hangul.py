@@ -56,9 +56,17 @@ def HangleToBraille(letter, prev, next):
         :param next: 다음 한글 문자(마지막 글자면 None)
         :return: 입력된 한글 문자 1개에 매치되는 점자
     """
+    ## 한글자 이상 입력이 들어올 경우
     if len(letter) > 1:
         print("ERR: Syllabification()은 한글자만 입력 받음")
         return ""
+
+    # 제 9항 단독으로 쓰인 자모일 경우 온표(⠿)를 적어 나타냄
+    if (letter in brailleDB.han_cho_dict):
+        return "⠿" + brailleDB.han_cho_dict[letter] + " "
+    elif (letter in brailleDB.han_jung_dict):
+        return "⠿" + brailleDB.han_jung_dict[letter] + " "
+
     if (not (isHangul(letter) or isSpace(letter))):
         # print(f"ERR: <{letter}>은 한글 문자가 아님")
         # 한글 문자가 아니면 일단 그대로 반환

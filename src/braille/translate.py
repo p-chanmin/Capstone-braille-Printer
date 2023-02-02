@@ -47,7 +47,7 @@ def translate(text: str):
     separated_text = list(text)
     # print(f"{Tag}: separated_text - {separated_text}")
 
-    # 번역된 문자 저장될 리스트
+    # 번역된 문자 저장될 리스트 (얕은 복사)
     translated_text = separated_text[:]
 
     # 약자를 반영하여 한글자씩 번역
