@@ -34,20 +34,14 @@ def braille_to_data(braille: str):
 
 
 def translate(text: str):
-    # 공백으로(단어로) 분리
-    # separated_text = text.split(" ")
+    """
+    주어진 문자열을 점자로 번역하는 함수
+    :param text: 번역할 문자열(한글, 영어, 특수문자, 숫자)
+    :return: 번역된 점자 문자열
+    """
 
-    # print(f"{Tag}: 약어를 점자로 변경")
-    # # 약어를 점자로 변경
-    # for i in range(len(separated_text)):
-    #     if separated_text[i] in brailleDB.abb_word_dict:
-    #         separated_text[i] = brailleDB.abb_word_dict[separated_text[i]]
-    #
-    # # 공백 추가 후 문자열 생성
-    # text = " ".join(separated_text)
+    # 문자열에서 약어를 적용
     text = hangul.HangleApplyAbbreviationWords(text)
-
-    # print(f"{Tag}: 약어 반영 후 text - {text}")
 
     # 글자로 분리
     separated_text = list(text)
