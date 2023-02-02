@@ -177,7 +177,12 @@ def HangleToBraille(letter, prev, next):
 
     return "".join(tran)
 
-def HangleApplyAbbreviationWords(text):
+def HangleApplyAbbreviationWords(text: str):
+    """
+    문장에서 약어를 반영하여 약어를 점자로 바꾼 문자열을 반환
+        :param text: 번역할 문장
+        :return: 문장에서 약어를 점자로 바꾼 문자열
+    """
     # 제 18항 약어 적용
     for abbWord in brailleDB.abb_word_dict:
         text = text.replace(abbWord, brailleDB.abb_word_dict[abbWord])
