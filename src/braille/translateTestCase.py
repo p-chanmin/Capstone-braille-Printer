@@ -315,18 +315,23 @@ def testTran():
     """
     total = 0
     for tc in translateTestCase:
-        result = translate(tc)
-        answer = translateTestCase[tc]
-        cnt = 0
-        for (r, a) in zip(result, answer.replace("⠀", " ")):
-            if (r == a): cnt += 1
-        if (cnt == len(result)): total += 1
-        else:
-            print("ERR ===============")
-            print(f"TEST CAST : {tc}")
-            print(f"result : {result}")
-            print(f"answer : {answer}")
-            print("===================")
+        try:
+            result = translate(tc)
+            answer = translateTestCase[tc]
+            cnt = 0
+            for (r, a) in zip(result, answer.replace("⠀", " ")):
+                if (r == a): cnt += 1
+            if (cnt == len(result)):
+                total += 1
+            else:
+                print("ERR ===============")
+                print(f"TEST CAST : {tc}")
+                print(f"result : {result}")
+                print(f"answer : {answer}")
+                print("===================")
+        except:
+            print(f"번역 오류 : {tc}")
+
     print(f"번역 일치율 {total / len(translateTestCase) * 100}")
 
 ## 테스트 실행
