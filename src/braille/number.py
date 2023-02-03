@@ -1,4 +1,5 @@
 from src.braille import brailleDB
+from src.braille import hangul
 
 
 def isNumber(letter):
@@ -36,6 +37,16 @@ def NumberToBraille(letter, prev, next):
     if(prev is None or not isNumber(prev)):
         tran.append(brailleDB.num_start)
 
+    # 숫자를 점자로 번역
     tran.append(brailleDB.num_dict[letter])
+
+    # 제 38항 예외, 숫자 뒤에 (ㄴㄷㅁㅋㅌㅍㅎ)의 첫 글자, (운)의 약자가 올때는 띄어쓰기 추가
+    if(next is not None and hangul.isHangul(next)):
+        # 다음 글자가 한글일 경우 음절 분리
+        next_cho, next_jung, next_jong = hangul.Syllabification(next)
+        if(next_cho in "ㄴㄷㅁㅋㅌㅍㅎ" or next == '운'):
+            tran.append(" ")
+
+
 
     return "".join(tran)
