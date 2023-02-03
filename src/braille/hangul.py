@@ -15,8 +15,8 @@ jong = [
 
 def isHangul(letter):
     """
-    입력된 한글 문자 1개가 한글인지 판별
-        :param letter: 한글 문자 1개
+    입력된 문자 1개가 한글인지 판별
+        :param letter: 문자 1개
         :return: 한글이면 true, 아니면 false
     """
     return True if ((ord('가') <= ord(letter) and ord(letter) <= ord('힣')) or letter in cho or letter in jung) else False
