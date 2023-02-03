@@ -19,7 +19,7 @@ def isHangul(letter):
         :param letter: 한글 문자 1개
         :return: 한글이면 true, 아니면 false
     """
-    return True if (ord('가') <= ord(letter) and ord(letter) <= ord('힣')) else False
+    return True if ((ord('가') <= ord(letter) and ord(letter) <= ord('힣')) or letter in cho or letter in jung) else False
 
 def isSpace(letter):
     """
@@ -36,7 +36,7 @@ def Syllabification(letter):
         :param letter: 입력된 한글 문자 1개
         :return: 초성, 중성, 종성 순서로 반환,(한글이 아닌 문자나 None이 입력되면 None을 반환)
     """
-    if(letter == None or not isHangul(letter)): return None, None, None
+    if(letter == None or not isHangul(letter) or letter in cho or letter in jung): return None, None, None
     offset = ord(letter) - ord('가') # index 계산을 위한 offset 설정
     # 음절 분리
     ## 초성
