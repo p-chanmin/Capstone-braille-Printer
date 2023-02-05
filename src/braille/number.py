@@ -44,6 +44,9 @@ def NumberToBraille(letter, index, text):
         # 소숫점을 표현한 특수문자 '.', ',', '·',':'에서는 수표를 추가하지 않음.
         if(prev is not None  and prev in ".,·:" and isNumber(p_prev)):
             pass
+        # 이전 문자가 아포스트로피일 경우 수표 추가 x
+        elif(prev is not None  and prev in "ʼ"):
+            pass
         else:
             tran.append(brailleDB.num_start)
 

@@ -46,6 +46,9 @@ def MarkToBraille(letter, index, text):
     # 제 47항 예외, 줄임표(…)는 1~2개까지 표현
     elif(letter == '…' and prev == '…'):
         pass
+    elif(letter == 'ʼ' and number.isNumber(getChar(text, index+1))):
+        tran.append(brailleDB.num_start)
+        tran.append(brailleDB.mark_dict[letter])
     else:
         # 특수문자를 점자로 번역
         tran.append(brailleDB.mark_dict[letter])
