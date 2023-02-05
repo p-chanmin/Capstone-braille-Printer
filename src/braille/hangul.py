@@ -171,7 +171,7 @@ def HangleToBraille(letter, index, text):
             tran.append(brailleDB.han_jong_dict[s])
 
     # 제 10항 모음자에 (ㅖ)가 이어 나올 때 그 사이에 붙임표(⠤)를 적어 나타낸다
-    elif(chosung == "ㅇ" and jungsung == 'ㅖ' and prev != None and prev_jong is None):
+    elif(chosung == "ㅇ" and jungsung == 'ㅖ' and not isSpace(prev) and prev != None and prev_jong is None):
         tran.append("⠤")    # 붙임표
         tran.append(brailleDB.han_jung_dict[jungsung])
         if jongsung is not None: tran.append(brailleDB.han_jong_dict[jongsung])
