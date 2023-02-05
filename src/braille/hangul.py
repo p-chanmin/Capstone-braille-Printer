@@ -1,4 +1,5 @@
 import brailleDB
+from src.utils.checkText import getChar
 
 # 초성에 올 수 있는 자음
 cho = [
@@ -49,7 +50,7 @@ def Syllabification(letter):
     
     return chosung, jungsung, jongsung
 
-def HangleToBraille(letter, prev, next):
+def HangleToBraille(letter, index, text):
     """
     한글 문자 1개를 점자로 번역하는 함수
         :param letter: 입력된 한글 문자 1개
@@ -79,6 +80,9 @@ def HangleToBraille(letter, prev, next):
     if letter == ' ':   # 공백일 경우
         return ' '
 
+    # 이전, 다음 문자 가져오기
+    prev = getChar(text, index - 1)
+    next = getChar(text, index + 1)
     # 초성, 중성, 종성으로 음절 분리
     chosung , jungsung, jongsung = Syllabification(letter)
     prev_cho, prev_jung, prev_jong = Syllabification(prev)

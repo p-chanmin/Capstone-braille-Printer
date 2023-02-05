@@ -1,5 +1,6 @@
 from src.braille import brailleDB
 from src.braille import hangul
+from src.utils.checkText import getChar
 
 
 def isNumber(letter):
@@ -19,8 +20,10 @@ def isSpace(letter):
     """
     return True if letter == ' ' else False
 
-def NumberToBraille(letter, prev, next):
+def NumberToBraille(letter, index, text):
 
+    prev = getChar(text, index - 1)   # 이전 글자 가져오기
+    next = getChar(text, index + 1)   # 다음 글자 가져오기
 
     ## 한글자 이상 입력이 들어올 경우
     if len(letter) > 1:
@@ -34,9 +37,15 @@ def NumberToBraille(letter, prev, next):
 
     tran = []  # 번역된 점자가 들어갈 리스트
 
+
     # 이전 문자가 숫자가 아니라면 수표 추가
     if(prev is None or not isNumber(prev)):
-        tran.append(brailleDB.num_start)
+        p_prev = getChar(text, index - 2)  # 이전 글자 가져오기
+        # 소숫점을 표현한 특수문자 '.', ','에서는 수표를 추가하지 않음.
+        if(prev is not None  and prev in ".," and isNumber(p_prev)):
+            pass
+        else:
+            tran.append(brailleDB.num_start)
 
     # 숫자를 점자로 번역
     tran.append(brailleDB.num_dict[letter])
