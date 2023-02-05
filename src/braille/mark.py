@@ -8,6 +8,7 @@ def isMark(letter):
         :param letter: 문자 1개
         :return: 숫자이면 true, 아니면 false
     """
+    if (letter is None): return False
     return True if (letter in brailleDB.mark_dict) else False
 
 def isSpace(letter):

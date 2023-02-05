@@ -19,6 +19,7 @@ def isHangul(letter):
         :param letter: 문자 1개
         :return: 한글이면 true, 아니면 false
     """
+    if (letter is None): return False
     return True if ((ord('가') <= ord(letter) and ord(letter) <= ord('힣')) or letter in cho or letter in jung) else False
 
 def isSpace(letter):
