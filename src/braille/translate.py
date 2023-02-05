@@ -11,7 +11,7 @@ import brailleDB, hangul
 #
 #    예) ⠓ (1-2-5)일 경우, 점자 유무로 표기하면 "1 1 0 0 1 0 0 0"가 되고, 이를 역순 이진법으로 취하면 "00010011(19, 0x13)"이 된다.
 #   그러므로 0x2800 + 0x13 = 0x2813, 즉 U+2813이 해당 점자의 유니코드가 된다.
-from src.braille import number
+from src.braille import number, mark
 
 Tag = "translate.py"
 
@@ -64,12 +64,13 @@ def translate(text: str):
             translated_text[i] = hangul.HangleToBraille(separated_text[i], prev, next)
         elif number.isNumber(separated_text[i]):
             translated_text[i] = number.NumberToBraille(separated_text[i], prev, next)
-
+        elif mark.isMark(separated_text[i]):
+            translated_text[i] = mark.MarkToBraille(separated_text[i], prev, next)
 
     return "".join(translated_text)
 
-test = "500"
-answer = "⠊⠗⠫⠼⠁⠃⠉⠐⠕"
+test = "3.14"
+answer = "⠼⠉⠲⠁⠙"
 
 print(translate(test))
 print(answer)
