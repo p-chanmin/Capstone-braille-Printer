@@ -176,7 +176,7 @@ def HangleToBraille(letter, index, text):
         tran.append(brailleDB.han_jung_dict[jungsung])
         if jongsung is not None: tran.append(brailleDB.han_jong_dict[jongsung])
     # 제 11항 (ㅑ,ㅘ,ㅜ,ㅝ)에 (ㅐ)가 이어 나올 때 그 사이에 붙임표를 적어 나타낸다
-    elif (chosung == "ㅇ" and jungsung == 'ㅐ' and prev_jong is None and prev_jung in "ㅑㅘㅜㅝ"):
+    elif (chosung == "ㅇ" and jungsung == 'ㅐ' and prev_jong is None and prev_jung in ['ㅑ','ㅘ','ㅜ','ㅝ']):
         tran.append("⠤")  # 붙임표
         tran.append(brailleDB.han_jung_dict[jungsung])
         if jongsung is not None: tran.append(brailleDB.han_jong_dict[jongsung])
