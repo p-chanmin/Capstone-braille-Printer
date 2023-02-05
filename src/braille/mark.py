@@ -1,5 +1,6 @@
 import brailleDB
-
+from src.braille import number
+from src.utils.checkText import getChar
 
 
 def isMark(letter):
@@ -34,9 +35,14 @@ def MarkToBraille(letter, prev, next):
         return f"{letter}"
 
     tran = []  # 번역된 점자가 들어갈 리스트
-    
-    # 특수문자를 점자로 번역
-    tran.append(brailleDB.mark_dict[letter])
+
+    if(letter == ',' and
+            number.isNumber(getChar(text, index-1)) and
+            (number.isNumber(getChar(text, index+1)) and number.isNumber(getChar(text, index+2)) and number.isNumber(getChar(text, index+3)))):
+        tran.append('⠂')
+    else:
+        # 특수문자를 점자로 번역
+        tran.append(brailleDB.mark_dict[letter])
 
 
 
