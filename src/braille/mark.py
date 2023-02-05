@@ -20,8 +20,7 @@ def isSpace(letter):
     """
     return True if letter == ' ' else False
 
-
-def MarkToBraille(letter, prev, next):
+def MarkToBraille(letter, index, text):
 
 
     ## 한글자 이상 입력이 들어올 경우
@@ -36,9 +35,12 @@ def MarkToBraille(letter, prev, next):
 
     tran = []  # 번역된 점자가 들어갈 리스트
 
+    # 제 47항 예외, 수의 자릿점을 표현하는 (,)의 경우 (⠂)으로 표현
     if(letter == ',' and
             number.isNumber(getChar(text, index-1)) and
-            (number.isNumber(getChar(text, index+1)) and number.isNumber(getChar(text, index+2)) and number.isNumber(getChar(text, index+3)))):
+            (number.isNumber(getChar(text, index+1)) and
+             number.isNumber(getChar(text, index+2)) and
+             number.isNumber(getChar(text, index+3)))):
         tran.append('⠂')
     else:
         # 특수문자를 점자로 번역
