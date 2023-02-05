@@ -1,4 +1,5 @@
 import brailleDB
+from src.utils.checkText import getChar
 
 # 초성에 올 수 있는 자음
 cho = [
@@ -19,6 +20,7 @@ def isHangul(letter):
         :param letter: 문자 1개
         :return: 한글이면 true, 아니면 false
     """
+    if (letter is None): return False
     return True if ((ord('가') <= ord(letter) and ord(letter) <= ord('힣')) or letter in cho or letter in jung) else False
 
 def isSpace(letter):
@@ -48,7 +50,7 @@ def Syllabification(letter):
     
     return chosung, jungsung, jongsung
 
-def HangleToBraille(letter, prev, next):
+def HangleToBraille(letter, index, text):
     """
     한글 문자 1개를 점자로 번역하는 함수
         :param letter: 입력된 한글 문자 1개
@@ -78,6 +80,9 @@ def HangleToBraille(letter, prev, next):
     if letter == ' ':   # 공백일 경우
         return ' '
 
+    # 이전, 다음 문자 가져오기
+    prev = getChar(text, index - 1)
+    next = getChar(text, index + 1)
     # 초성, 중성, 종성으로 음절 분리
     chosung , jungsung, jongsung = Syllabification(letter)
     prev_cho, prev_jung, prev_jong = Syllabification(prev)
@@ -166,12 +171,12 @@ def HangleToBraille(letter, prev, next):
             tran.append(brailleDB.han_jong_dict[s])
 
     # 제 10항 모음자에 (ㅖ)가 이어 나올 때 그 사이에 붙임표(⠤)를 적어 나타낸다
-    elif(chosung == "ㅇ" and jungsung == 'ㅖ' and prev != None and prev_jong is None):
+    elif(chosung == "ㅇ" and jungsung == 'ㅖ' and not isSpace(prev) and prev != None and prev_jong is None):
         tran.append("⠤")    # 붙임표
         tran.append(brailleDB.han_jung_dict[jungsung])
         if jongsung is not None: tran.append(brailleDB.han_jong_dict[jongsung])
     # 제 11항 (ㅑ,ㅘ,ㅜ,ㅝ)에 (ㅐ)가 이어 나올 때 그 사이에 붙임표를 적어 나타낸다
-    elif (chosung == "ㅇ" and jungsung == 'ㅐ' and prev_jong is None and prev_jung in "ㅑㅘㅜㅝ"):
+    elif (chosung == "ㅇ" and jungsung == 'ㅐ' and prev_jong is None and prev_jung in ['ㅑ','ㅘ','ㅜ','ㅝ']):
         tran.append("⠤")  # 붙임표
         tran.append(brailleDB.han_jung_dict[jungsung])
         if jongsung is not None: tran.append(brailleDB.han_jong_dict[jongsung])
