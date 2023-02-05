@@ -22,6 +22,7 @@ def isSpace(letter):
 
 def MarkToBraille(letter, index, text):
 
+    prev = getChar(text, index-1)
 
     ## 한글자 이상 입력이 들어올 경우
     if len(letter) > 1:
@@ -37,11 +38,14 @@ def MarkToBraille(letter, index, text):
 
     # 제 47항 예외, 수의 자릿점을 표현하는 (,)의 경우 (⠂)으로 표현
     if(letter == ',' and
-            number.isNumber(getChar(text, index-1)) and
+            number.isNumber(prev) and
             (number.isNumber(getChar(text, index+1)) and
              number.isNumber(getChar(text, index+2)) and
              number.isNumber(getChar(text, index+3)))):
         tran.append('⠂')
+    # 제 47항 예외, 줄임표(…)는 1~2개까지 표현
+    elif(letter == '…' and prev == '…'):
+        pass
     else:
         # 특수문자를 점자로 번역
         tran.append(brailleDB.mark_dict[letter])
