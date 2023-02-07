@@ -53,27 +53,18 @@ def translate(text: str):
 
     # 약자를 반영하여 한글자씩 번역
     for i in range(len(separated_text)):
-        # 이전 문자 읽기
-        if (i == 0): prev = None
-        else : prev = separated_text[i-1]
-        # 다음 문자 읽기
-        if (i == len(separated_text) - 1): next = None
-        else: next = separated_text[i+1]
         # 한글자 씩 번역
         if hangul.isHangul(separated_text[i]):  # 한글 번역
             translated_text[i] = hangul.HangleToBraille(separated_text[i], i, text)
-        elif number.isNumber(separated_text[i]):    # 숫자 번역, 전전 문자가 필요함
-            # 전전 문자 읽기
-            if (i <= 1): p_prev = None
-            else: p_prev = separated_text[i - 2]
+        elif number.isNumber(separated_text[i]):    # 숫자 번역
             translated_text[i] = number.NumberToBraille(separated_text[i], i, text)
-        elif mark.isMark(separated_text[i]):    # 특수 문자 번역, 전전 문자가 필요
+        elif mark.isMark(separated_text[i]):    # 특수 문자 번역
             translated_text[i] = mark.MarkToBraille(separated_text[i], i, text)
 
     return "".join(translated_text)
 
-test = "4,333"
-answer = "⠼⠙⠂⠉⠉⠉"
+test = "마음이 애달팠다."
+answer = "⠑⠣⠪⠢⠕⠀⠗⠊⠂⠙⠣⠌⠊⠲"
 
 print(translate(test))
 print(answer)
