@@ -1,5 +1,6 @@
 import brailleDB
 from src.braille import number
+from src.braille.hangul import isHangul
 from src.utils.checkText import getChar
 
 
@@ -23,6 +24,7 @@ def isSpace(letter):
 def MarkToBraille(letter, index, text):
 
     prev = getChar(text, index-1)
+    next = getChar(text, index+1)
 
     ## 한글자 이상 입력이 들어올 경우
     if len(letter) > 1:
@@ -46,6 +48,13 @@ def MarkToBraille(letter, index, text):
     # 제 47항 예외, 줄임표(…)는 1~2개까지 표현
     elif(letter == '…' and prev == '…'):
         pass
+    # 제 73항 예외, 연산기호(+−×÷=±%)가 한글 사이에 오면 앞뒤 한 칸씩 띄어 표현
+    elif (letter in "+−×÷=±%"):
+        if(isHangul(prev)):
+            tran.append(" ")
+        tran.append(brailleDB.mark_dict[letter])
+        if (isHangul(next)):
+            tran.append(" ")
     elif(letter == 'ʼ' and number.isNumber(getChar(text, index+1))):
         tran.append(brailleDB.num_start)
         tran.append(brailleDB.mark_dict[letter])
