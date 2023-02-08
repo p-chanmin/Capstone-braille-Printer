@@ -1,5 +1,6 @@
 from src.braille import brailleDB
 from src.braille import hangul
+from src.braille.mark import isMark
 from src.utils.checkText import getChar
 import re
 
@@ -40,9 +41,27 @@ def EnglishToBraille(letter, index, text):
 
     tran = []  # 번역된 점자가 들어갈 리스트
 
-
+    # 공백을 제외한 이전 문자 찾기
+    i = index - 1
+    while(isSpace(prev) or isMark(prev)):
+        i -= 1
+        prev = getChar(text, i)  # 다음 글자 가져오기
+    # 영어 시작 시 로마자 시작 표시
+    if (not isEnglish(prev)):
+        tran.append(brailleDB.eng_start)
+        
     # 영어를 점자로 번역
     tran.append(brailleDB.eng_dict[letter])
+
+    # 공백을 제외한 다음 문자 찾기
+    i = index + 1
+    while(isSpace(next) or (isMark(next) and next != '.')):
+        i += 1
+        next = getChar(text, i)  # 다음 글자 가져오기
+    # 영어 끝나면 로마자 종료 표시
+    # 영어 다음에 (.)이 나오면 종료 표시 대신 마침표(.)의 점자를 찍음
+    if (not isEnglish(next) and next != '.'):
+        tran.append(brailleDB.eng_end)
 
 
 

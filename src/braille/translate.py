@@ -65,8 +65,8 @@ def translate(text: str):
 
     return "".join(translated_text)
 
-test = "english"
-answer = "⠴⠢⠛⠇⠊⠩"
+test = "Blue, blue"
+answer = "⠴⠠⠃⠇⠥⠑⠐ ⠃⠇⠥⠑⠲"
 
 print(translate(test))
 print(answer)
