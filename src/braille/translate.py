@@ -1,4 +1,4 @@
-from src.braille import number, mark, hangul
+from src.braille import number, mark, hangul, english
 
 #   점자의 번호:
 #   (1) (4)
@@ -60,11 +60,13 @@ def translate(text: str):
             translated_text[i] = number.NumberToBraille(separated_text[i], i, text)
         elif mark.isMark(separated_text[i]):    # 특수 문자 번역
             translated_text[i] = mark.MarkToBraille(separated_text[i], i, text)
+        elif english.isEnglish(separated_text[i]):  # 영어 번역
+            translated_text[i] = english.EnglishToBraille(separated_text[i], i, text)
 
     return "".join(translated_text)
 
-test = "마음이 애달팠다."
-answer = "⠑⠣⠪⠢⠕⠀⠗⠊⠂⠙⠣⠌⠊⠲"
+test = "english"
+answer = "⠴⠢⠛⠇⠊⠩"
 
 print(translate(test))
 print(answer)
