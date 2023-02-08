@@ -42,7 +42,7 @@ def NumberToBraille(letter, index, text):
     if(prev is None or not isNumber(prev)):
         p_prev = getChar(text, index - 2)  # 이전 글자 가져오기
         # 소숫점을 표현한 특수문자 '.', ',', '·',':'에서는 수표를 추가하지 않음.
-        if(prev is not None  and prev in ".,·:" and isNumber(p_prev)):
+        if(prev is not None  and prev in ".,·:‐" and isNumber(p_prev)):
             pass
         # 이전 문자가 아포스트로피일 경우 수표 추가 x
         elif(prev is not None  and prev in "ʼ"):
