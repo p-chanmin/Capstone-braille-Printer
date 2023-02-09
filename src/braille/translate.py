@@ -11,7 +11,9 @@ from src.braille import number, mark, hangul, english
 #
 #    예) ⠓ (1-2-5)일 경우, 점자 유무로 표기하면 "1 1 0 0 1 0 0 0"가 되고, 이를 역순 이진법으로 취하면 "00010011(19, 0x13)"이 된다.
 #   그러므로 0x2800 + 0x13 = 0x2813, 즉 U+2813이 해당 점자의 유니코드가 된다.
-
+from src.braille.english import isSpace, isEnglish
+from src.braille.mark import isMark
+from src.utils.checkText import getChar
 
 Tag = "translate.py"
 
@@ -51,6 +53,9 @@ def translate(text: str):
     # 번역된 문자 저장될 리스트 (얕은 복사)
     translated_text = separated_text[:]
 
+    eng_idx_start = None
+    eng_idx_end = None
+
     # 약자를 반영하여 한글자씩 번역
     for i in range(len(separated_text)):
         # 한글자 씩 번역
@@ -61,12 +66,31 @@ def translate(text: str):
         elif mark.isMark(separated_text[i]):    # 특수 문자 번역
             translated_text[i] = mark.MarkToBraille(separated_text[i], i, text)
         elif english.isEnglish(separated_text[i]):  # 영어 번역
-            translated_text[i] = english.EnglishToBraille(separated_text[i], i, text)
+            # 영어 문장의 범위 구하기
+            # eng_idx_start = i, eng_idx_end = 영어 문장의 끝 인덱스
+            if(eng_idx_start is None and eng_idx_end is None):
+                eng_idx_end = i+1
+                next = getChar(text, eng_idx_end)
+                while(isEnglish(next) or isSpace(next) or (isMark(next) and next != '.')):
+                    eng_idx_end += 1
+                    next = getChar(text, eng_idx_end)
+                while(not isEnglish(next)):
+                    eng_idx_end -= 1
+                    next = getChar(text, eng_idx_end)
+                eng_idx_start = i
+
+                # print(text[eng_idx_start:eng_idx_end+1])
+            translated_text[i] = english.EnglishToBraille(separated_text[i], i, eng_idx_start, eng_idx_end, text)
+            
+            # 해당 범위의 점역이 완료 되면 None 상태로 번경
+            if(i == eng_idx_end):
+                eng_idx_start = None
+                eng_idx_end = None
 
     return "".join(translated_text)
 
-test = "Blue, blue"
-answer = "⠴⠠⠃⠇⠥⠑⠐ ⠃⠇⠥⠑⠲"
+test = "Mr.나 Mrs."
+answer = "⠴⠠⠍⠗⠲⠉⠀⠴⠠⠍⠗⠎⠲"
 
 print(translate(test))
 print(answer)

@@ -11,10 +11,9 @@ def isEnglish(letter):
         :param letter: 문자 1개
         :return: 영어면 true, 아니면 false
     """
-    reg = re.compile(r'[a-zA-Z]')
     if(letter is None): return False
     # (@#^&)는 한글 점자 규정이 없어 영어 점자 규정을 따라간다. 따라서 영어로 해석되어야 함
-    return True if (reg.match(letter) or letter in "@#^&") else False
+    return True if (letter in brailleDB.eng_dict) else False
 
 def isSpace(letter):
     """
@@ -24,10 +23,7 @@ def isSpace(letter):
     """
     return True if letter == ' ' else False
 
-def EnglishToBraille(letter, index, text):
-
-    prev = getChar(text, index - 1)   # 이전 글자 가져오기
-    next = getChar(text, index + 1)   # 다음 글자 가져오기
+def EnglishToBraille(letter, i, start, end, text):
 
     ## 한글자 이상 입력이 들어올 경우
     if len(letter) > 1:
@@ -41,26 +37,16 @@ def EnglishToBraille(letter, index, text):
 
     tran = []  # 번역된 점자가 들어갈 리스트
 
-    # 공백을 제외한 이전 문자 찾기
-    i = index - 1
-    while(isSpace(prev) or isMark(prev)):
-        i -= 1
-        prev = getChar(text, i)  # 다음 글자 가져오기
     # 영어 시작 시 로마자 시작 표시
-    if (not isEnglish(prev)):
+    if (i == start):
         tran.append(brailleDB.eng_start)
         
     # 영어를 점자로 번역
     tran.append(brailleDB.eng_dict[letter])
 
-    # 공백을 제외한 다음 문자 찾기
-    i = index + 1
-    while(isSpace(next) or (isMark(next) and next != '.')):
-        i += 1
-        next = getChar(text, i)  # 다음 글자 가져오기
     # 영어 끝나면 로마자 종료 표시
     # 영어 다음에 (.)이 나오면 종료 표시 대신 마침표(.)의 점자를 찍음
-    if (not isEnglish(next) and next != '.'):
+    if (i == end and getChar(text, end+1) != '.'):
         tran.append(brailleDB.eng_end)
 
 
