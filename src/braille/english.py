@@ -23,6 +23,17 @@ def isSpace(letter):
     """
     return True if letter == ' ' else False
 
+def isAllUpper(str: str):
+    result = True
+    for i in str:
+        if(i.isupper() or isMark(i)):
+            pass
+        else:
+            result = False
+            break
+    return result
+
+
 def EnglishToBraille(letter, i, start, end, text):
 
     ## 한글자 이상 입력이 들어올 경우
@@ -40,6 +51,14 @@ def EnglishToBraille(letter, i, start, end, text):
     # 영어 시작 시 로마자 시작 표시
     if (i == start):
         tran.append(brailleDB.eng_start)
+
+    eng_text = text[start:end+1]
+    # if(isAllUpper(eng_text)):
+    #     tran.append(brailleDB.eng_word_upper)
+    print(eng_text.split(" "))
+    # 대문자일 경우 대문자 기호표 추가
+    if(letter.isupper()):
+        tran.append(brailleDB.eng_upper)
         
     # 영어를 점자로 번역
     tran.append(brailleDB.eng_dict[letter])
