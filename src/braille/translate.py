@@ -78,12 +78,12 @@ def translate(text: str):
                 while(isEnglish(next) or isSpace(next) or (isMark(next) and next != '.')):
                     eng_idx_end += 1
                     next = getChar(text, eng_idx_end)
-                while(not (isEnglish(next) or (isMark(next) and next != '.'))):
+                while(not ((isEnglish(next) and next not in  ')]}>〉')) or (isMark(next) and next not in  ')]}>〉')):
                     eng_idx_end -= 1
                     next = getChar(text, eng_idx_end)
                 eng_idx_start = i
 
-                # print(text[eng_idx_start:eng_idx_end+1])
+                print(text[eng_idx_start:eng_idx_end+1])
             translated_text[i] = english.EnglishToBraille(separated_text[i], i, eng_idx_start, eng_idx_end, text)
             
             # 해당 범위의 점역이 완료 되면 None 상태로 번경
@@ -94,8 +94,8 @@ def translate(text: str):
 
     return "".join(translated_text)
 
-test = "물은 100°C에서 끓는다."
-answer = "⠑⠯⠵⠀⠼⠁⠚⠚⠴⠙⠠⠉⠀⠝⠠⠎⠀⠠⠈⠮⠴⠉⠵⠊⠲"
+test = "A4"
+answer = "⠴⠠⠠⠍⠏⠼⠉"
 
 print(translate(test))
 print(answer)

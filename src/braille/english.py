@@ -68,6 +68,7 @@ def EnglishToBraille(letter, i, start, end, text):
             next = getChar(eng_text, ei+1)
             tmp = ei+1
             end_idx = ei
+            # 대문자의 범위 탐색
             while(not (next is None or next.islower() or next in "@#^&/")):
                 if(next is None):
                     end_idx = tmp - 1
@@ -76,16 +77,19 @@ def EnglishToBraille(letter, i, start, end, text):
                     tmp += 1
                     next = getChar(eng_text, tmp)
                     if(next is None or next.islower() or next in "@#^&/"): end_idx = tmp - 1
-            if (ei == end_idx):
+            if (ei == end_idx): # 대문자가 범위가 1개일 경우
                 print("대문자표 하나")
-                one_upper.append(ei)
+                if(eng_text[ei] == "Å"):    # 단위표 옹스트롬은 대문자로 인식하지만, 대문자 취급x
+                    pass
+                else:
+                    one_upper.append(ei)
                 state = 'lower'
             else:
                 tmp_text = eng_text[ei:end_idx+1]
-                if(len(tmp_text.split(" ")) >= 3):
+                if(len(tmp_text.split(" ")) >= 3):  # 범위를 스플릿 했을 때 3개 이상 나올 경우 구절
                     print("구절표")
                     str_upper.append(ei)
-                else:
+                else:   # 그렇지 않은 경우 단어표
                     print("단어표")
                     eng_word_list = tmp_text.split(" ")
                     for t in range(len(eng_word_list)):
@@ -98,6 +102,7 @@ def EnglishToBraille(letter, i, start, end, text):
             end_upper.append(ei)
             state = 'lower'
 
+    # 대문자 표 작성
     if (eng_idx in one_upper): tran.append(brailleDB.eng_upper)
     elif (eng_idx in word_upper): tran.append(brailleDB.eng_word_upper)
     elif (eng_idx in str_upper): tran.append(brailleDB.eng_str_upper)
@@ -110,9 +115,20 @@ def EnglishToBraille(letter, i, start, end, text):
     # 영어 다음에 (.)이 나오면 종료 표시 대신 마침표(.)의 점자를 찍음
     if (i == end and getChar(text, end+1) != '.'):
         # 제 31항 단위 부호로 끝날 경우 공백을 추가
-        if(letter in "%‰°′″Å" or (letter in "CF" and getChar(text, i-1) == "°")):
-            tran.append(' ')
-        else:
+        #   °C, °F
+        #   %p
+        if(letter in "%‰°′″Å"
+                or (letter in "CF" and getChar(text, i-1) == "°")
+                or (letter in "p" and getChar(text, i-1) == "%")):
+            # 이미 공백이면 생략
+            if(getChar(text, i+1) == " "):
+                pass
+            else:
+                tran.append(' ')
+        elif(getChar(text, i+1) is not None and getChar(text, i+1).isnumeric()):
+            print("asdf")
+            pass
+        else:   # 일반적인 경우 로마자 종료 표시
             tran.append(brailleDB.eng_end)
 
 
