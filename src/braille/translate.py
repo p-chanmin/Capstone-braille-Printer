@@ -64,17 +64,21 @@ def translate(text: str):
         elif number.isNumber(separated_text[i]):    # 숫자 번역
             translated_text[i] = number.NumberToBraille(separated_text[i], i, text)
         elif mark.isMark(separated_text[i]):    # 특수 문자 번역
-            translated_text[i] = mark.MarkToBraille(separated_text[i], i, text)
+            if(eng_idx_start is not None and eng_idx_end is not None and english.isEnglish(separated_text[i])):
+                translated_text[i] = english.EnglishToBraille(separated_text[i], i, eng_idx_start, eng_idx_end, text)
+            else:
+                translated_text[i] = mark.MarkToBraille(separated_text[i], i, text)
         elif english.isEnglish(separated_text[i]):  # 영어 번역
             # 영어 문장의 범위 구하기
             # eng_idx_start = i, eng_idx_end = 영어 문장의 끝 인덱스
             if(eng_idx_start is None and eng_idx_end is None):
+                print("영어 범위 계산")
                 eng_idx_end = i+1
                 next = getChar(text, eng_idx_end)
                 while(isEnglish(next) or isSpace(next) or (isMark(next) and next != '.')):
                     eng_idx_end += 1
                     next = getChar(text, eng_idx_end)
-                while(not isEnglish(next)):
+                while(not (isEnglish(next) or (isMark(next) and next != '.'))):
                     eng_idx_end -= 1
                     next = getChar(text, eng_idx_end)
                 eng_idx_start = i
@@ -86,11 +90,12 @@ def translate(text: str):
             if(i == eng_idx_end):
                 eng_idx_start = None
                 eng_idx_end = None
+                print("영어 범위 계산 초기화")
 
     return "".join(translated_text)
 
-test = "Mr.나 Mrs."
-answer = "⠴⠠⠍⠗⠲⠉⠀⠴⠠⠍⠗⠎⠲"
+test = "물은 100°C에서 끓는다."
+answer = "⠑⠯⠵⠀⠼⠁⠚⠚⠴⠙⠠⠉⠀⠝⠠⠎⠀⠠⠈⠮⠴⠉⠵⠊⠲"
 
 print(translate(test))
 print(answer)

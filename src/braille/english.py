@@ -52,13 +52,56 @@ def EnglishToBraille(letter, i, start, end, text):
     if (i == start):
         tran.append(brailleDB.eng_start)
 
+    eng_idx = i - start
     eng_text = text[start:end+1]
-    # if(isAllUpper(eng_text)):
-    #     tran.append(brailleDB.eng_word_upper)
-    print(eng_text.split(" "))
-    # 대문자일 경우 대문자 기호표 추가
-    if(letter.isupper()):
-        tran.append(brailleDB.eng_upper)
+    global state
+    global end_idx
+    state = 'lower'
+    end_idx = 0
+    one_upper = []
+    word_upper = []
+    str_upper = []
+    end_upper = []
+    for ei in range(len(eng_text)):
+        if(state == 'lower' and eng_text[ei].isupper()):
+            state = 'upper'
+            next = getChar(eng_text, ei+1)
+            tmp = ei+1
+            end_idx = ei
+            while(not (next is None or next.islower() or next in "@#^&/")):
+                if(next is None):
+                    end_idx = tmp - 1
+                    break
+                else:
+                    tmp += 1
+                    next = getChar(eng_text, tmp)
+                    if(next is None or next.islower() or next in "@#^&/"): end_idx = tmp - 1
+            if (ei == end_idx):
+                print("대문자표 하나")
+                one_upper.append(ei)
+                state = 'lower'
+            else:
+                tmp_text = eng_text[ei:end_idx+1]
+                if(len(tmp_text.split(" ")) >= 3):
+                    print("구절표")
+                    str_upper.append(ei)
+                else:
+                    print("단어표")
+                    eng_word_list = tmp_text.split(" ")
+                    for t in range(len(eng_word_list)):
+                        if(t == 0): word_upper.append(ei)
+                        else: word_upper.append(ei+len(eng_word_list[t-1])+1)
+
+        elif(state == 'upper' and eng_text[ei].isupper()):
+            pass
+        elif(state == 'upper' and eng_text[ei].islower()):
+            end_upper.append(ei)
+            state = 'lower'
+
+    if (eng_idx in one_upper): tran.append(brailleDB.eng_upper)
+    elif (eng_idx in word_upper): tran.append(brailleDB.eng_word_upper)
+    elif (eng_idx in str_upper): tran.append(brailleDB.eng_str_upper)
+    if (eng_idx in end_upper): tran.append(brailleDB.eng_end_upper)
         
     # 영어를 점자로 번역
     tran.append(brailleDB.eng_dict[letter])
@@ -66,7 +109,11 @@ def EnglishToBraille(letter, i, start, end, text):
     # 영어 끝나면 로마자 종료 표시
     # 영어 다음에 (.)이 나오면 종료 표시 대신 마침표(.)의 점자를 찍음
     if (i == end and getChar(text, end+1) != '.'):
-        tran.append(brailleDB.eng_end)
+        # 제 31항 단위 부호로 끝날 경우 공백을 추가
+        if(letter in "%‰°′″Å" or (letter in "CF" and getChar(text, i-1) == "°")):
+            tran.append(' ')
+        else:
+            tran.append(brailleDB.eng_end)
 
 
 
