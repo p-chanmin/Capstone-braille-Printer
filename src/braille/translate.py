@@ -94,8 +94,8 @@ def translate(text: str):
 
     return "".join(translated_text)
 
-test = "A4"
-answer = "⠴⠠⠠⠍⠏⠼⠉"
+test = "that"
+answer = "⠴⠹⠁⠞⠲"
 
 print(translate(test))
 print(answer)
