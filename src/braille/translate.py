@@ -1,4 +1,4 @@
-from src.braille import number, mark, hangul, english
+from src.braille import number, mark, hangul, english, brailleDB
 
 #   점자의 번호:
 #   (1) (4)
@@ -13,6 +13,7 @@ from src.braille import number, mark, hangul, english
 #   그러므로 0x2800 + 0x13 = 0x2813, 즉 U+2813이 해당 점자의 유니코드가 된다.
 from src.braille.english import isSpace, isEnglish
 from src.braille.mark import isMark
+from src.braille.number import isNumber
 from src.utils.checkText import getChar
 
 Tag = "translate.py"
@@ -59,7 +60,14 @@ def translate(text: str):
     # 약자를 반영하여 한글자씩 번역
     for i in range(len(separated_text)):
         # 한글자 씩 번역
-        if hangul.isHangul(separated_text[i]):  # 한글 번역
+        if(eng_idx_start is not None and eng_idx_end is not None):  # 영어 번역 위치라면 빈칸으로 변경
+            translated_text[i] = ''
+            # 해당 범위의 점역이 완료 되면 None 상태로 번경
+            if(i == eng_idx_end):
+                eng_idx_start = None
+                eng_idx_end = None
+                print("영어 범위 계산 초기화")
+        elif hangul.isHangul(separated_text[i]):  # 한글 번역
             translated_text[i] = hangul.HangleToBraille(separated_text[i], i, text)
         elif number.isNumber(separated_text[i]):    # 숫자 번역
             translated_text[i] = number.NumberToBraille(separated_text[i], i, text)
@@ -69,33 +77,37 @@ def translate(text: str):
             else:
                 translated_text[i] = mark.MarkToBraille(separated_text[i], i, text)
         elif english.isEnglish(separated_text[i]):  # 영어 번역
-            # 영어 문장의 범위 구하기
+            # 단위일 경우
+            if(separated_text[i] in "CF" and getChar(text, i-1) == "°"):
+                translated_text[i] = brailleDB.eng_upper + brailleDB.eng_dict[separated_text[i]]
+                if (getChar(text, i+1) != ' '):
+                    translated_text[i] += ' '
+            elif (separated_text[i] in "p" and getChar(text, i - 1) == "%"):
+                translated_text[i] = brailleDB.eng_dict[separated_text[i]]
+                if (getChar(text, i+1) != ' '):
+                    translated_text[i] += ' '
+
+            # 단위가 아닌 경우, 영어 문장의 범위 구하기
             # eng_idx_start = i, eng_idx_end = 영어 문장의 끝 인덱스
-            if(eng_idx_start is None and eng_idx_end is None):
+            elif(eng_idx_start is None and eng_idx_end is None):
                 print("영어 범위 계산")
                 eng_idx_end = i+1
                 next = getChar(text, eng_idx_end)
-                while(isEnglish(next) or isSpace(next) or (isMark(next) and next != '.')):
+                while(isEnglish(next) or isSpace(next) or isNumber(next) or (isMark(next) and next not in '.%‰°′″Å')):
                     eng_idx_end += 1
                     next = getChar(text, eng_idx_end)
-                while(not ((isEnglish(next) and next not in  ')]}>〉')) or (isMark(next) and next not in  ')]}>〉')):
+                while(not (((isEnglish(next) or isNumber(next)) and next not in  ')]}>〉')) or (isMark(next) and next not in  ')]}>〉')):
                     eng_idx_end -= 1
                     next = getChar(text, eng_idx_end)
                 eng_idx_start = i
 
-                print(text[eng_idx_start:eng_idx_end+1])
-            translated_text[i] = english.EnglishToBraille(separated_text[i], i, eng_idx_start, eng_idx_end, text)
-            
-            # 해당 범위의 점역이 완료 되면 None 상태로 번경
-            if(i == eng_idx_end):
-                eng_idx_start = None
-                eng_idx_end = None
-                print("영어 범위 계산 초기화")
+                # 영어 범위 점역
+                translated_text[i] = english.EnglishToBraille(eng_idx_start, eng_idx_end, text)
 
     return "".join(translated_text)
 
-test = "that"
-answer = "⠴⠹⠁⠞⠲"
+test = "A2AA2A%oasdf"
+answer = "⠴⠠⠠⠅⠃⠎⠀⠼⠁⠠⠠⠞⠧⠲"
 
 print(translate(test))
 print(answer)

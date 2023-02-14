@@ -55,6 +55,12 @@ def MarkToBraille(letter, index, text):
         tran.append(brailleDB.mark_dict[letter])
         if (isHangul(next)):
             tran.append(" ")
+    elif (letter in "%‰°′″Å"):
+        if (letter == "°" and getChar(text, index+1) in "CF") or (letter == "%" and getChar(text, index+1) in "p"):
+            tran.append(brailleDB.mark_dict[letter])
+        elif(getChar(text, index) != ' '):
+            tran.append(brailleDB.mark_dict[letter])
+            tran.append(" ")
     elif(letter == 'ʼ' and number.isNumber(getChar(text, index+1))):
         tran.append(brailleDB.num_start)
         tran.append(brailleDB.mark_dict[letter])
