@@ -106,8 +106,8 @@ def translate(text: str):
 
     return "".join(translated_text)
 
-test = "A2AA2A%oasdf"
-answer = "⠴⠠⠠⠅⠃⠎⠀⠼⠁⠠⠠⠞⠧⠲"
+test = "A2AA2A°Foasdf"
+answer = "⠴⠠⠁⠼⠃⠠⠠⠁⠁⠠⠄⠼⠃⠴⠠⠁⠲⠴⠏⠀⠴⠕⠁⠎⠙⠋"
 
 print(translate(test))
 print(answer)
