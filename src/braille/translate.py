@@ -54,28 +54,19 @@ def translate(text: str):
     # 번역된 문자 저장될 리스트 (얕은 복사)
     translated_text = separated_text[:]
 
-    eng_idx_start = None
-    eng_idx_end = None
+    eng_idx_end = -1    # 영어 범위 인덱스 초기값
 
     # 약자를 반영하여 한글자씩 번역
     for i in range(len(separated_text)):
         # 한글자 씩 번역
-        if(eng_idx_start is not None and eng_idx_end is not None):  # 영어 번역 위치라면 빈칸으로 변경
+        if(i <= eng_idx_end):  # 영어 번역 위치라면 빈칸으로 변경
             translated_text[i] = ''
-            # 해당 범위의 점역이 완료 되면 None 상태로 번경
-            if(i == eng_idx_end):
-                eng_idx_start = None
-                eng_idx_end = None
-                print("영어 범위 계산 초기화")
         elif hangul.isHangul(separated_text[i]):  # 한글 번역
             translated_text[i] = hangul.HangleToBraille(separated_text[i], i, text)
         elif number.isNumber(separated_text[i]):    # 숫자 번역
             translated_text[i] = number.NumberToBraille(separated_text[i], i, text)
         elif mark.isMark(separated_text[i]):    # 특수 문자 번역
-            if(eng_idx_start is not None and eng_idx_end is not None and english.isEnglish(separated_text[i])):
-                translated_text[i] = english.EnglishToBraille(separated_text[i], i, eng_idx_start, eng_idx_end, text)
-            else:
-                translated_text[i] = mark.MarkToBraille(separated_text[i], i, text)
+            translated_text[i] = mark.MarkToBraille(separated_text[i], i, text)
         elif english.isEnglish(separated_text[i]):  # 영어 번역
             # 단위일 경우
             if(separated_text[i] in "CF" and getChar(text, i-1) == "°"):
@@ -88,15 +79,15 @@ def translate(text: str):
                     translated_text[i] += ' '
 
             # 단위가 아닌 경우, 영어 문장의 범위 구하기
-            # eng_idx_start = i, eng_idx_end = 영어 문장의 끝 인덱스
-            elif(eng_idx_start is None and eng_idx_end is None):
+            # eng_idx_end = 영어 문장의 끝 인덱스
+            elif(i > eng_idx_end):  # 새로운 영어 문장일 경우
                 print("영어 범위 계산")
                 eng_idx_end = i+1
                 next = getChar(text, eng_idx_end)
                 while(isEnglish(next) or isSpace(next) or isNumber(next) or (isMark(next) and next not in '.%‰°′″Å')):
                     eng_idx_end += 1
                     next = getChar(text, eng_idx_end)
-                while(not (((isEnglish(next) or isNumber(next)) and next not in  ')]}>〉')) or (isMark(next) and next not in  ')]}>〉')):
+                while(next is None or not (isEnglish(next) or isNumber(next) or (isMark(next) and next not in ')]}>〉'))):
                     eng_idx_end -= 1
                     next = getChar(text, eng_idx_end)
                 eng_idx_start = i
@@ -106,8 +97,8 @@ def translate(text: str):
 
     return "".join(translated_text)
 
-test = "A2AA2A°Foasdf"
-answer = "⠴⠠⠁⠼⠃⠠⠠⠁⠁⠠⠄⠼⠃⠴⠠⠁⠲⠴⠏⠀⠴⠕⠁⠎⠙⠋"
+test = "다음을 O/X로 표기하시오."
+answer = "⠊⠣⠪⠢⠮⠀⠴⠠⠧⠲⠙⠬⠐⠥⠀⠙⠬⠠⠕⠚⠠⠕⠥⠲"
 
 print(translate(test))
 print(answer)
