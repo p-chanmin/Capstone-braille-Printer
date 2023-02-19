@@ -188,6 +188,34 @@ eng_mark_dict = {
     '〉': '⠈⠜',
     '*': '⠐⠔',
 }
+
+# 영어 알파벳 단어 약자
+eng_alpha_word_abb_dict = {
+    "but": "⠃",
+    "can": "⠉",
+    "do": "⠙",
+    "every": "⠑",
+    "from": "⠋",
+    "go": "⠛",
+    "have": "⠓",
+    "just": "⠚",
+    "knowledge": "⠅",
+    "like": "⠇",
+    "more": "⠍",
+    "not": "⠝",
+    "people": "⠏",
+    "quite": "⠟",
+    "rather": "⠗",
+    "so": "⠎",
+    "that": "⠞",
+    "us": "⠥",
+    "very": "⠧",
+    "it": "⠭",
+    "you": "⠽",
+    "as": "⠵",
+    "will": "⠺",
+}
+
 # 숫자 점자
 num_start = '⠼'     # 수표
 num_dict = {
