@@ -94,8 +94,6 @@ def findUpper(eng_text):
 
     return one_upper, word_upper, str_upper, end_upper
 
-t= "TWO TO FIVE!"
-
 
 def EnglishToBraille(start, end, text):
 
@@ -126,15 +124,6 @@ def EnglishToBraille(start, end, text):
     # 로마자 시작 표시 추가
     eng_text = brailleDB.eng_start + eng_text
 
-    # 대문자 표 작성
-    # if (eng_idx in one_upper): tran.append(brailleDB.eng_upper)
-    # elif (eng_idx in word_upper): tran.append(brailleDB.eng_word_upper)
-    # elif (eng_idx in str_upper): tran.append(brailleDB.eng_str_upper)
-    # if (eng_idx in end_upper): tran.append(brailleDB.eng_end_upper)
-        
-    # 영어를 점자로 번역
-    # tran.append(brailleDB.eng_dict[letter])
-
     # 영어 끝나면 로마자 종료 표시
     # 영어 다음에 (.)이 나오면 종료 표시 대신 마침표(.)의 점자를 찍음
     if (eng_text[-1] != '.'):
@@ -155,6 +144,10 @@ def EnglishToBraille(start, end, text):
         else:   # 일반적인 경우 로마자 종료 표시
             eng_text = eng_text + brailleDB.eng_end
 
+    for i in brailleDB.eng_word_abb_dict:
+        eng_text = eng_text.replace(i, brailleDB.eng_word_abb_dict[i])
+
+    print(eng_text)
 
 
     return "".join(eng_text)
