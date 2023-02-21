@@ -49,12 +49,22 @@ def MarkToBraille(letter, index, text):
     elif(letter == '…' and prev == '…'):
         pass
     # 제 73항 예외, 연산기호(+−×÷=±%)가 한글 사이에 오면 앞뒤 한 칸씩 띄어 표현
-    elif (letter in "+−×÷=±%"):
+    elif (letter in "+−×÷=±"):
         if(isHangul(prev)):
             tran.append(" ")
         tran.append(brailleDB.mark_dict[letter])
         if (isHangul(next)):
             tran.append(" ")
+    elif (letter in "%‰°′″Å"):
+        if(letter == "%"):
+            if (isHangul(prev)):
+                tran.append(" ")
+        if (letter == "°" and next is not None and next in "CF") or (letter == "%" and next is not None and next in "p"):
+            tran.append(brailleDB.mark_dict[letter])
+        else:
+            tran.append(brailleDB.mark_dict[letter])
+            if(next != ' '):
+                tran.append(" ")
     elif(letter == 'ʼ' and number.isNumber(getChar(text, index+1))):
         tran.append(brailleDB.num_start)
         tran.append(brailleDB.mark_dict[letter])
