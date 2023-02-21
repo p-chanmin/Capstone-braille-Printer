@@ -81,7 +81,6 @@ def translate(text: str):
             # 단위가 아닌 경우, 영어 문장의 범위 구하기
             # eng_idx_end = 영어 문장의 끝 인덱스
             elif(i > eng_idx_end):  # 새로운 영어 문장일 경우
-                print("영어 범위 계산")
                 eng_idx_end = i+1
                 next = getChar(text, eng_idx_end)
                 while(isEnglish(next) or isSpace(next) or isNumber(next) or (isMark(next) and next not in '.%‰°′″Å')):

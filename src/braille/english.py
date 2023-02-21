@@ -71,20 +71,16 @@ def findUpper(eng_text):
             max_idx = end_idx   # 최대 idx 갱신, 범위 안의 문자는 다시 탐색x
 
             sub_text = re.sub(r"\s+$", "", eng_text[start_idx:end_idx+1])   # 문자열의 마지막 공백을 제거한 대문자 범위 문자열
-            print(sub_text, end)
 
             if(len(sub_text) == 1): # 대문자 1개일 경우, 대문자 기호표
-                print("대문자 1개")
                 one_upper.append(i)
             else:   # 대문자 1개 이상일 경우
                 sub_text_list = sub_text.split(" ") # 공백으로 단어 분리
                 if(len(sub_text_list) >= 3):    # 단어가 3개 이상일 경우, 대문자 구절표
-                    print("대문자 구절표")
                     str_upper.append(i)
                     if(end):    # 대문자 종료표를 적어야 할 경우
                         end_upper.append(i+len(sub_text))
                 else: # 단어가 2개 이하일 경우, 대문자 단어표
-                    print("대문자 단어표")
                     for ti in range(len(sub_text_list)):
                         if(ti == 0): word_upper.append(i)
                         else:
@@ -112,7 +108,6 @@ def EnglishToBraille(start, end, text):
     one_upper, word_upper, str_upper, end_upper = findUpper(eng_text)
 
     eng_text = list(text[start:end + 1])
-    print(eng_text)
     # 대문자 표 작성
     for i in range(len(eng_text)):
         if (i in one_upper):
@@ -162,5 +157,4 @@ def EnglishToBraille(start, end, text):
             else:   # 영문 특수문자가 없으면 기본 한글 특수문자로 점역
                 translated_text[i] = mark.MarkToBraille(eng_text[i], start+i-1, text)
 
-    print(translated_text)
     return "".join(translated_text)
