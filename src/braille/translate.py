@@ -96,6 +96,6 @@ def translate(text: str):
 
     return "".join(translated_text)
 
-test = "ab%p가"
+test = ""
 
 print(translate(test))
