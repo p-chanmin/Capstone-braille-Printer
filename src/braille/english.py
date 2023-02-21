@@ -1,7 +1,4 @@
-from src.braille import brailleDB
-from src.braille import hangul
-from src.braille.mark import isMark
-from src.braille.number import isNumber
+from src.braille import brailleDB, mark, number
 from src.utils.checkText import getChar
 import re
 
@@ -24,17 +21,17 @@ def isSpace(letter):
     """
     return True if letter == ' ' else False
 
-def isAllUpper(str: str):
-    result = True
-    for i in str:
-        if(i.isupper() or isMark(i)):
-            pass
-        else:
-            result = False
-            break
-    return result
-
 def UpperDFS(i, d, eng_text, end = False, now_cnt = 1, prev_cnt = 1):
+    """
+    대문자 범위를 판별하기 위한 DFS 함수
+    :param i: 시작 인덱스
+    :param d: 깊이
+    :param eng_text: 영어 문장
+    :param end: 종료표의 필요 여부
+    :param now_cnt: 현재 단어의 대문자 cnt
+    :param prev_cnt: 이전 단어의 대문자 cnt
+    :return: (대문자 시작 인덱스, 대문자 마지막 인덱스, 종료표 여부)
+    """
     next = getChar(eng_text, d+1)
     if(next is None):
         return (i, d, False)
@@ -48,19 +45,23 @@ def UpperDFS(i, d, eng_text, end = False, now_cnt = 1, prev_cnt = 1):
         (ti, td, te) = UpperDFS(i, d+1, eng_text, end, 0, prev_cnt)
         return (i, td, te)
     else: # 대문자 종료 구문
-        if(next.islower() or isNumber(next) or (isMark(next) and next not in ",")):
+        if(next.islower() or number.isNumber(next) or (mark.isMark(next) and next not in ",")):
             return (i, d, True)
         else:
             return (i, d, end)
 
 
 def findUpper(eng_text):
+    """
+    영어 문장에서 대문자의 범위를 판별하여, 대문자표를 삽입할 인덱스를 반환하는 함수
+        :param eng_text: 영어 문장
+        :return: [대문자 기호표 인덱스], [대문자 단어표 인덱스], [대문자 구절표 인덱스], [대문자 종료표 인덱스]
+    """
     max_idx = -1
     one_upper = []
     word_upper = []
     str_upper = []
     end_upper = []
-
 
     for i in range(len(eng_text)):
         if(i <= max_idx):
@@ -96,19 +97,22 @@ def findUpper(eng_text):
 
 
 def EnglishToBraille(start, end, text):
+    """
+    영어문장을 점자로 번역하는 함수
+        :param start: 전체 문장에서 영어 부분의 시작 인덱스
+        :param end: 전체 문장에서 영어 부분의 끝 인덱스
+        :param text: 전체 문장
+        :return: 영어 문장을 영어로 점역된 문장
+    """
 
-    tran = []  # 번역된 점자가 들어갈 리스트
-
-    # 영어 시작 시 로마자 시작 표시
-    # if (i == start):
-    #     tran.append(brailleDB.eng_start)
-
-    # eng_idx = i - start
+    # 전체 text에서 영어 부분만 추출
     eng_text = text[start:end+1]
-    print(eng_text)
+
+    # 대문자표 삽입 위치 탐색
     one_upper, word_upper, str_upper, end_upper = findUpper(eng_text)
 
     eng_text = list(text[start:end + 1])
+    print(eng_text)
     # 대문자 표 작성
     for i in range(len(eng_text)):
         if (i in one_upper):
@@ -133,21 +137,30 @@ def EnglishToBraille(start, end, text):
         if(eng_text[-1] in "%‰°′″Å"
                 or (eng_text[-1] in "CF" and eng_text[-2] == "°")
                 or (eng_text[-1] in "p" and eng_text[-2] == "%")):
-            # 이미 공백이면 생략
-            if(getChar(text, end+1) == " "):
-                pass
-            else:
-                tran.append(' ')
+            # 단위로 끝날 경우 특수문자에서 처리
+            pass
         elif(getChar(text, end+1) is not None and (getChar(text, end+1).isnumeric() or getChar(text, end+1) == '.')):
-            print("로마자 종료표 생략")
             pass
         else:   # 일반적인 경우 로마자 종료 표시
             eng_text = eng_text + brailleDB.eng_end
 
-    for i in brailleDB.eng_word_abb_dict:
-        eng_text = eng_text.replace(i, brailleDB.eng_word_abb_dict[i])
+    # 대문자표, 로마자 시작, 종료표 반영 완료 후 text를 모두 소문자로 변환
+    eng_text = eng_text.lower()
 
-    print(eng_text)
+    # 번역된 문자 저장될 리스트 (얕은 복사)
+    translated_text = list(eng_text)[:]
 
+    # 한글자 씩 번역
+    for i in range(len(eng_text)):
+        if isEnglish(eng_text[i]):  # 영어 번역
+            translated_text[i] = brailleDB.eng_dict[eng_text[i]]
+        elif number.isNumber(eng_text[i]):  # 숫자 번역
+            translated_text[i] = number.NumberToBraille(eng_text[i], i, eng_text)
+        elif mark.isMark(eng_text[i]):  # 특수 문자 번역
+            if(eng_text[i] in brailleDB.eng_mark_dict): # 영문 특수문자가 존재하면 영문 특수문자로 번역
+                translated_text[i] = brailleDB.eng_mark_dict[eng_text[i]]
+            else:   # 영문 특수문자가 없으면 기본 한글 특수문자로 번역
+                translated_text[i] = mark.MarkToBraille(eng_text[i], start+i-1, text)
 
-    return "".join(eng_text)
+    print(translated_text)
+    return "".join(translated_text)

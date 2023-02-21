@@ -59,7 +59,7 @@ def MarkToBraille(letter, index, text):
         if(letter == "%"):
             if (isHangul(prev)):
                 tran.append(" ")
-        if (letter == "°" and next in "CF") or (letter == "%" and next in "p"):
+        if (letter == "°" and next is not None and next in "CF") or (letter == "%" and next is not None and next in "p"):
             tran.append(brailleDB.mark_dict[letter])
         else:
             tran.append(brailleDB.mark_dict[letter])

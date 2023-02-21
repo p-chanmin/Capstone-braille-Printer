@@ -97,8 +97,6 @@ def translate(text: str):
 
     return "".join(translated_text)
 
-test = "다음을 O/X로 표기하시오."
-answer = "⠊⠣⠪⠢⠮⠀⠴⠠⠧⠲⠙⠬⠐⠥⠀⠙⠬⠠⠕⠚⠠⠕⠥⠲"
+test = "ab%p가"
 
 print(translate(test))
-print(answer)
