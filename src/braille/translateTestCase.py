@@ -589,9 +589,9 @@ translateTestCase = {
 
 def testTran():
     """
-    테스트 케이스에 저장된 문자를 번역하여
+    테스트 케이스에 저장된 문자를 점역하여
     올바른 점자와 비교,
-        :return: 틀린 번역의 경우, 번역과 올바른 점자를 출력
+        :return: 틀린 점역의 경우, 점역과 올바른 점자를 출력
     """
     total = 0
     for tc in translateTestCase:
@@ -610,9 +610,9 @@ def testTran():
                 print(f"answer : {answer}")
                 print("===================")
         except:
-            print(f"번역 오류 : {tc}")
+            print(f"점역 오류 : {tc}")
 
-    print(f"번역 일치율 {total / len(translateTestCase) * 100}")
+    print(f"점역 일치율 {total / len(translateTestCase) * 100}")
 
 ## 테스트 실행
 testTran()

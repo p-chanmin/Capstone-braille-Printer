@@ -22,6 +22,13 @@ def isSpace(letter):
     return True if letter == ' ' else False
 
 def MarkToBraille(letter, index, text):
+    """
+    특수문자를 점자로 점역하는 함수
+    :param letter: 입력된 특수 문자 1개
+    :param index: 특수 문자의 해당 인덱스
+    :param text: 전체 문장
+    :return: 입력된 특수 문자 1개에 매칭되는 점자
+    """
 
     prev = getChar(text, index-1)
     next = getChar(text, index+1)
@@ -36,7 +43,7 @@ def MarkToBraille(letter, index, text):
         # 숫자 문자가 아니면 일단 그대로 반환
         return f"{letter}"
 
-    tran = []  # 번역된 점자가 들어갈 리스트
+    tran = []  # 점역된 점자가 들어갈 리스트
 
     # 제 47항 예외, 수의 자릿점을 표현하는 (,)의 경우 (⠂)으로 표현
     if(letter == ',' and
@@ -69,7 +76,7 @@ def MarkToBraille(letter, index, text):
         tran.append(brailleDB.num_start)
         tran.append(brailleDB.mark_dict[letter])
     else:
-        # 특수문자를 점자로 번역
+        # 특수문자를 점자로 점역
         tran.append(brailleDB.mark_dict[letter])
 
 

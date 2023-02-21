@@ -21,6 +21,13 @@ def isSpace(letter):
     return True if letter == ' ' else False
 
 def NumberToBraille(letter, index, text):
+    """
+    숫자 1개를 점자로 점역하는 함수
+    :param letter: 입력된 숫자 1개
+    :param index: 숫자의 해당 인덱스
+    :param text: 전체 문장
+    :return: 입력된 숫자 1개에 매칭되는 점자
+    """
 
     prev = getChar(text, index - 1)   # 이전 글자 가져오기
     next = getChar(text, index + 1)   # 다음 글자 가져오기
@@ -35,7 +42,7 @@ def NumberToBraille(letter, index, text):
         # 숫자 문자가 아니면 일단 그대로 반환
         return f"{letter}"
 
-    tran = []  # 번역된 점자가 들어갈 리스트
+    tran = []  # 점역된 점자가 들어갈 리스트
 
 
     # 이전 문자가 숫자가 아니라면 수표 추가
@@ -50,7 +57,7 @@ def NumberToBraille(letter, index, text):
         else:
             tran.append(brailleDB.num_start)
 
-    # 숫자를 점자로 번역
+    # 숫자를 점자로 점역
     tran.append(brailleDB.num_dict[letter])
 
     # 제 38항 예외, 숫자 뒤에 (ㄴㄷㅁㅋㅌㅍㅎ)의 첫 글자, (운)의 약자가 올때는 띄어쓰기 추가

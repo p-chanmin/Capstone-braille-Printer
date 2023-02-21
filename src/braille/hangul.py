@@ -52,11 +52,11 @@ def Syllabification(letter):
 
 def HangleToBraille(letter, index, text):
     """
-    한글 문자 1개를 점자로 번역하는 함수
+    한글 문자 1개를 점자로 점역하는 함수
         :param letter: 입력된 한글 문자 1개
-        :param prev: 이전 한글 문자(첫 글자면 None)
-        :param next: 다음 한글 문자(마지막 글자면 None)
-        :return: 입력된 한글 문자 1개에 매치되는 점자
+        :param index: 한글 문자의 해당 인덱스
+        :param text: 전체 문장
+        :return: 입력된 한글 문자 1개에 매칭되는 점자
     """
     ## 한글자 이상 입력이 들어올 경우
     if len(letter) > 1:
@@ -75,7 +75,7 @@ def HangleToBraille(letter, index, text):
         return f"{letter}"
 
     syllables = []  # 분리된 음절이 들어갈 리스트
-    tran = [] # 번역된 점자가 들어갈 리스트
+    tran = [] # 점역된 점자가 들어갈 리스트
 
     if letter == ' ':   # 공백일 경우
         return ' '
@@ -193,7 +193,7 @@ def HangleToBraille(letter, index, text):
 def HangleApplyAbbreviationWords(text: str):
     """
     문장에서 약어를 반영하여 약어를 점자로 바꾼 문자열을 반환
-        :param text: 번역할 문장
+        :param text: 점역할 문장
         :return: 문장에서 약어를 점자로 바꾼 문자열
     """
     # 제 18항 약어 적용

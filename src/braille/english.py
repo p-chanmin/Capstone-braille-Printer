@@ -98,7 +98,7 @@ def findUpper(eng_text):
 
 def EnglishToBraille(start, end, text):
     """
-    영어문장을 점자로 번역하는 함수
+    영어문장을 점자로 점역하는 함수
         :param start: 전체 문장에서 영어 부분의 시작 인덱스
         :param end: 전체 문장에서 영어 부분의 끝 인덱스
         :param text: 전체 문장
@@ -147,19 +147,19 @@ def EnglishToBraille(start, end, text):
     # 대문자표, 로마자 시작, 종료표 반영 완료 후 text를 모두 소문자로 변환
     eng_text = eng_text.lower()
 
-    # 번역된 문자 저장될 리스트 (얕은 복사)
+    # 점역된 문자 저장될 리스트 (얕은 복사)
     translated_text = list(eng_text)[:]
 
-    # 한글자 씩 번역
+    # 한글자 씩 점역
     for i in range(len(eng_text)):
-        if isEnglish(eng_text[i]):  # 영어 번역
+        if isEnglish(eng_text[i]):  # 영어 점역
             translated_text[i] = brailleDB.eng_dict[eng_text[i]]
-        elif number.isNumber(eng_text[i]):  # 숫자 번역
+        elif number.isNumber(eng_text[i]):  # 숫자 점역
             translated_text[i] = number.NumberToBraille(eng_text[i], i, eng_text)
-        elif mark.isMark(eng_text[i]):  # 특수 문자 번역
-            if(eng_text[i] in brailleDB.eng_mark_dict): # 영문 특수문자가 존재하면 영문 특수문자로 번역
+        elif mark.isMark(eng_text[i]):  # 특수 문자 점역
+            if(eng_text[i] in brailleDB.eng_mark_dict): # 영문 특수문자가 존재하면 영문 특수문자로 점역
                 translated_text[i] = brailleDB.eng_mark_dict[eng_text[i]]
-            else:   # 영문 특수문자가 없으면 기본 한글 특수문자로 번역
+            else:   # 영문 특수문자가 없으면 기본 한글 특수문자로 점역
                 translated_text[i] = mark.MarkToBraille(eng_text[i], start+i-1, text)
 
     print(translated_text)

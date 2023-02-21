@@ -39,9 +39,9 @@ def braille_to_data(braille: str):
 
 def translate(text: str):
     """
-    주어진 문자열을 점자로 번역하는 함수
-    :param text: 번역할 문자열(한글, 영어, 특수문자, 숫자)
-    :return: 번역된 점자 문자열
+    주어진 문자열을 점자로 점역하는 함수
+    :param text: 점역할 문자열(한글, 영어, 특수문자, 숫자)
+    :return: 점역된 점자 문자열
     """
 
     # 문자열에서 약어를 적용
@@ -51,23 +51,23 @@ def translate(text: str):
     separated_text = list(text)
     # print(f"{Tag}: separated_text - {separated_text}")
 
-    # 번역된 문자 저장될 리스트 (얕은 복사)
+    # 점역된 문자 저장될 리스트 (얕은 복사)
     translated_text = separated_text[:]
 
     eng_idx_end = -1    # 영어 범위 인덱스 초기값
 
-    # 약자를 반영하여 한글자씩 번역
+    # 약자를 반영하여 한글자씩 점역
     for i in range(len(separated_text)):
-        # 한글자 씩 번역
-        if(i <= eng_idx_end):  # 영어 번역 위치라면 빈칸으로 변경
+        # 한글자 씩 점역
+        if(i <= eng_idx_end):  # 영어 점역 위치라면 빈칸으로 변경
             translated_text[i] = ''
-        elif hangul.isHangul(separated_text[i]):  # 한글 번역
+        elif hangul.isHangul(separated_text[i]):  # 한글 점역
             translated_text[i] = hangul.HangleToBraille(separated_text[i], i, text)
-        elif number.isNumber(separated_text[i]):    # 숫자 번역
+        elif number.isNumber(separated_text[i]):    # 숫자 점역
             translated_text[i] = number.NumberToBraille(separated_text[i], i, text)
-        elif mark.isMark(separated_text[i]):    # 특수 문자 번역
+        elif mark.isMark(separated_text[i]):    # 특수 문자 점역
             translated_text[i] = mark.MarkToBraille(separated_text[i], i, text)
-        elif english.isEnglish(separated_text[i]):  # 영어 번역
+        elif english.isEnglish(separated_text[i]):  # 영어 점역
             # 단위일 경우
             if(separated_text[i] in "CF" and getChar(text, i-1) == "°"):
                 translated_text[i] = brailleDB.eng_upper + brailleDB.eng_dict[separated_text[i]]
