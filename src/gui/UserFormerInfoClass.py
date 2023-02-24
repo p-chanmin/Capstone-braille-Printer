@@ -1,11 +1,6 @@
 from tkinter import *
-import tkinter.messagebox as msgbox
 
-from UserClass import User
-from StateClass import State
-import StateClass
 
-import serverFunction
 
 class UserFormerInfo:
   def __init__(self, historyList):

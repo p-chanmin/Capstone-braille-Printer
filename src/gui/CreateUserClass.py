@@ -1,8 +1,7 @@
 from tkinter import *
 import tkinter.messagebox as msgbox
 
-from UserClass import User
-import serverFunction
+from src.gui import serverFunction
 
 
 class CreateUser:

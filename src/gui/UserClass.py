@@ -1,15 +1,13 @@
-import serverFunction
 
 # _: protected  
 # __: private
 
 
 class User:
-  def __init__(self, id, password, con):
+  def __init__(self, id, password):
     self.__id = id
     self.__password = password
-    self.__con = con
-    
+
   def setId(self, id):
     self.__id = id
     

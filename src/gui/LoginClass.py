@@ -1,11 +1,9 @@
-from tkinter import *
 import tkinter.messagebox as msgbox
+from tkinter import *
 
-from UserClass import User
-from StateClass import State
-import StateClass
+from src.gui import StateClass, serverFunction
+from src.gui.StateClass import State
 
-import serverFunction
 
 class Login:
   
@@ -29,7 +27,7 @@ class Login:
     window.resizable(False, False)
 
     canvas = Canvas(window, width=200, height=200, background="white")
-    image = PhotoImage(file='./images/logo.png')
+    image = PhotoImage(file='src/images/logo.png')
     canvas.create_image(100,100,image=image)
     canvas.grid(row=0, column=1)
 
@@ -94,7 +92,7 @@ class Login:
       return
     
     #로그인 완료되면 다음단계로 ㄱㄱ
-    if serverFunction.LoginOk(self.__tmp_id,self.__tmp_password, self.__con):
+    if serverFunction.LoginOk(self.__tmp_id,self.__tmp_password):
       self.ok = True
       self.__end()
       self.state = StateClass.State.LOGINOK

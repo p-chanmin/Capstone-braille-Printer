@@ -39,17 +39,7 @@ def JoinOk(id, password, name, con):
 
 # 구현 해야됨
 def LoginOk(id, password):
-  url = "localhost:3000/api/user/login"
-
-  payload='email=a%40a.aa&password=1234'
-  headers = {}
-
-  response = requests.request("POST", url, headers=headers, data=payload)
-
-  if response.status_code == 200:
-    return True
-  else:
-    return False
+  return True
 
 ########## Home Class ##########
 
