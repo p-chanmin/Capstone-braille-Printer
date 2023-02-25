@@ -3,7 +3,7 @@ from src.gui.CreateUserClass import CreateUser
 from src.gui.HomeClass import Home
 from src.gui.LoginClass import Login
 from src.gui.UserClass import User
-from src.gui.BrailleInfoClass import BrailleCharInfo
+from src.gui.SpecialCharacterUIClass import BrailleCharInfo
 
 
 while True:

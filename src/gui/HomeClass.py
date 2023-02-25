@@ -1,30 +1,28 @@
+import threading
+import time
+
 from tkinter import *
 import tkinter.ttk as ttk
 from tkinter import filedialog # 파일 선택 (__all__에 없어서), 파일창
 import tkinter.messagebox as msgbox
 
 
-from src.gui.BrailleInfoClass import BrailleCharInfo
+from src.gui.SpecialCharacterUIClass import SpecialCharacterUI
 from src.braille.braillePrint import CheckText
 from src.braille.translate import translate
 
-
+from src.gui.CharThreadClass import CharThreadClass
 from src.gui import serverFunction, homeFunction
 from src.gui.UserClass import User
 from src.gui.UserFormerInfoClass import UserFormerInfo
 
-
-class Home:
+class Home(threading.Thread):
   def __init__(self, user):
     self.__user = user
     self.__window=self.__createUI()
 
     #self.text_place내에 있던 문자들 중에 점자 번역 매칭 안되는 문자들에 대한 text내 인덱스를 가지고 있는 리스트
-    self.incorrect_word_list = []
-
-    self.BCInstance = BrailleCharInfo(self)
-    self.start()
-    # self.start()
+    self.markIdx_lst = []
 
   def __createUI(self):
     root = Tk()
@@ -50,7 +48,7 @@ class Home:
     menu.add_cascade(label="더보기", menu=menu_2)
 
     menu_3 = Menu(menu, tearoff=0)
-    menu_3.add_command(label="특수문자 도움말", command=lambda : self.show_brailleChar_info(self))
+    menu_3.add_command(label="특수문자 도움말", command=lambda : self.createSpecialChacterUI())
     menu.add_cascade(label="도움말", menu=menu_3)
 
     root.config(menu=menu)
@@ -80,7 +78,7 @@ class Home:
     self.text_place.pack(side='left', fill='both', expand='True')
     scrollbar.config(command=self.text_place.yview)
 
-  # Text Button Frame {Text_Button_Frame={left_button_frame, rigt_button_frame} }
+  # Text Button Frame {Text_Button_Frame={left_button_frame, right_button_frame} }
     Text_Button_Frame = Frame(root)
     Text_Button_Frame.pack(fill='both', padx=5, pady=5)
     
@@ -89,44 +87,22 @@ class Home:
     left_button_frame.pack(fill='x', padx=5, pady=5, side='left')
     
     # -------------- left_button_frame 버튼 1행 --------------
-    double_quotationLeft_button = Button(left_button_frame, width=2, height=1, text="“", command=lambda :self.text_place.insert(END, "“"))
-    double_quotationRight_button = Button(left_button_frame, width=2, height=1, text="”", command=lambda :self.text_place.insert(END, "”"))
-    single_quotationLeft_button = Button(left_button_frame, width=2, height=1, text="‘", command=lambda :self.text_place.insert(END, "‘"))
-    single_quotationRight_button = Button(left_button_frame, width=2, height=1, text="’", command=lambda :self.text_place.insert(END, "’"))
-    comma_button = Button(left_button_frame, width=2, height=1, text=",", command=lambda :self.text_place.insert(END, ","))
-    
-   # -------------- left_button_frame 버튼 2행 --------------
+    special_characters_button = Button(left_button_frame, width=15, pady=2, text="특수 문자 추가", command=self.createSpecialChacterUI)
 
-    hyphen_button = Button(left_button_frame, width=2, height=1,text="‐", command=lambda :self.text_place.insert(END, "‐"))
-    dash_button = Button(left_button_frame, width=2, height=1,text="–", command=lambda :self.text_place.insert(END, "–"))
-    long_dash_button = Button(left_button_frame, width=2, height=1,text="―", command=lambda :self.text_place.insert(END, "―"))
-    minus_button = Button(left_button_frame, width=2, height=1,text="−", command=lambda :self.text_place.insert(END, "−"))
-    
     # -------------- left_button_frame 버튼 배치 --------------
-    double_quotationLeft_button.grid(row=0, column=0, padx=2, pady=2)
-    double_quotationRight_button.grid(row=0, column=1, padx=2, pady=2)
-    single_quotationLeft_button.grid(row=0, column=2, padx=2, pady=2)
-    single_quotationRight_button.grid(row=0, column=3, padx=2, pady=2)
-    comma_button.grid(row=0, column=4, padx=2, pady=2)
-    hyphen_button.grid(row=1, column=0, padx=2, pady=2)
-    dash_button.grid(row=1, column=1, padx=2, pady=2)
-    long_dash_button.grid(row=1, column=2, padx=2, pady=2)
-    minus_button.grid(row=1, column=3, padx=2, pady=2)
+    special_characters_button.grid(row=0, column=0, padx=2, pady=2)
+
 
     # -------------- right_button_frame--------------
-    rigt_button_frame = Frame(Text_Button_Frame)
-    rigt_button_frame.pack(fill='x', padx=5, pady=5, side='right')
+    right_button_frame = Frame(Text_Button_Frame)
+    right_button_frame.pack(fill='x', padx=5, pady=5, side='right')
     
-    # -------------- rigt_button_frame 버튼 1행 --------------
-    check_button = Button(rigt_button_frame, width=5, height=1, text="검사", command=self.check_braille_grammar)
-    left_arrow_button = Button(rigt_button_frame, width=2, height=1, text="<", command=self.go2Left)
-    right_arrow_button = Button(rigt_button_frame, width=2, height=1, text=">", command=self.go2Right)
-    Braille_button = Button(rigt_button_frame, width=5, height=1, text="점역", command=self.braille_review)
+    # -------------- right_button_frame 버튼 1행 --------------
+    check_button = Button(right_button_frame, width=5, pady=2, text="검사", command=self.check_braille_grammar)
+    Braille_button = Button(right_button_frame, width=5, pady=2, text="점역", command=self.braille_review)
 
-    # -------------- rigt_button_frame 버튼 배치 --------------
+    # -------------- right_button_frame 버튼 배치 --------------
     check_button.grid(row=0, column=0, padx=2 ,pady=2)
-    left_arrow_button.grid(row=0, column=1, padx=2 ,pady=2)
-    right_arrow_button.grid(row=0, column=2, padx=2 ,pady=2)
     Braille_button.grid(row=0, column=3, padx=2 ,pady=2)
 
   # -------------- braille Fraem --------------
@@ -216,10 +192,6 @@ class Home:
       else:
         msgbox.showerror(title="탈퇴 실패", message="탈퇴에 실패했습니다")
 
-  def show_brailleChar_info(self, hoemClassInstance):
-    BrailleCharInfo(hoemClassInstance).start()
-
-
   ############################# mode function ###################################
   
   def mode_function(self):
@@ -266,7 +238,10 @@ class Home:
     # ex) "abc" -> word_list = [(a, 65),(c, 67),(b, 66)]
     for c in self.word_list:
       self.text_place.insert(END, c[0])
-    
+    ############################# left button function ###################################
+
+  def createSpecialChacterUI(self):
+    SpecialCharacterUI(self).start()
   ############################# right button function ###################################
   def check_braille_grammar(self):
     
@@ -274,7 +249,7 @@ class Home:
 
     # 문자열이 완벽하면 true / 고쳐야될 부분 있으면 해당인덱스를 포함하는 리스트 반환
     lst = CheckText(string)
-
+    self.markIdx_lst = []
     if(lst == True):
       msgbox.showinfo(title="점자 해독 가능", message="점자 해독이 가능합니다. 오른쪽에 점역 버튼을 눌러주세요")
     else:
@@ -284,21 +259,20 @@ class Home:
       print("지움")
 
       past_idx = 0
-      cur_idx = len(lst)
-      markIdx_lst = []
+      cur_idx = 0
+      self.markIdx_lst = []
       for i in range(len(lst)):
         cur_idx = lst[i]
-
         self.text_place.insert(END, string[past_idx:cur_idx])
-        markIdx_lst.append(self.text_place.index(CURRENT))
-
+        self.markIdx_lst.append(self.text_place.index(CURRENT))
+        print(cur_idx, self.text_place.index(CURRENT))
         self.text_place.insert(END, string[cur_idx])
         past_idx = cur_idx + 1
 
       if past_idx < len(string):
         self.text_place.insert(END, string[past_idx:])
 
-      for idx in markIdx_lst:
+      for idx in self.markIdx_lst:
         size = len("".join(idx).split(".")[-1])
         idx2 = round(float(idx) + 10 ** (-size), size + 1)
         self.text_place.tag_add("강조", idx, idx2)
@@ -306,7 +280,10 @@ class Home:
 
       msgbox.showerror(title="점자 해독 불가", message="점자 해독이 불가능 합니다")
 
-
+  def createCharThread(self, instance):
+    t = CharThreadClass(instance)
+    t.daemon = True
+    t.start()
   def go2Left(self):
     pass  
   
@@ -332,6 +309,7 @@ class Home:
 
   ############################# process function ###################################  
   def start(self):
+    # self.createCharThread(self)
     self.__window.mainloop()
     
   
@@ -344,5 +322,5 @@ class Home:
 #####################################################################################
  
 user = User("JW","asdasd")
-home = Home(user)
-home.start()
+h = Home(user)
+h.start()

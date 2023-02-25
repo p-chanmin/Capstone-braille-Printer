@@ -1,10 +1,8 @@
 from tkinter import *
 
-class BrailleCharInfo:
+class SpecialCharacterUI:
     def __init__(self, hoemClassInstance):
         self.__createUI(hoemClassInstance)
-        print(id(hoemClassInstance))
-        print(id(self))
 
     def __createUI(self, hoemClassInstance):
         self.BCUIinstance = Tk()
