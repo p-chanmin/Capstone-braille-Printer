@@ -4,28 +4,22 @@
 
 
 class User:
-  def __init__(self, id, password):
-    self.__id = id
+  def __init__(self, email, password):
+    self.__email = email
     self.__password = password
 
-  def setId(self, id):
-    self.__id = id
+  def setEmail(self, email):
+    self.__email = email
     
   def setPassword(self, id):
     self.__password = id
-    
-  def setCon(self, con):
-    self.__con = con
       
-  def getId(self):
-    return self.__id
+  def getEmail(self):
+    return self.__email
   
   def getPassword(self):
     return self.__password
-  
-  def getCon(self):
-    return self.__con
-      
+
 
   
   

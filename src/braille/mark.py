@@ -1,4 +1,4 @@
-import brailleDB
+from src.braille import brailleDB
 from src.braille import number
 from src.braille.hangul import isHangul
 from src.utils.checkText import getChar

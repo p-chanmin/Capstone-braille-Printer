@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import brailleDB as db
+import src.braille.brailleDB as db
 from src.braille import hangul
 import numpy as np
 
@@ -160,3 +160,5 @@ result = transform_to_print("⠼⠉⠴⠠⠙⠲⠀⠙⠪⠐⠟⠓⠎⠤⠤⠼⠉
 
 for i in result:
     print(i)
+
+

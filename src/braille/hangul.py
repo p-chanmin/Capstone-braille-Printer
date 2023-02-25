@@ -1,4 +1,4 @@
-import brailleDB
+from src.braille import brailleDB
 from src.utils.checkText import getChar
 
 # 초성에 올 수 있는 자음

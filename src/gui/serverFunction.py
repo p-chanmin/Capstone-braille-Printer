@@ -6,15 +6,11 @@ import requests
 
 # 서버와 연결해주는 커넥터 반환
 # 구현 해야됨
-def getConnect():
-  con = True
-  return con
-
 
 ########## createAddr Class ##########
 
 # 구현 해야됨
-def idCheckOk(id, con):
+def idCheckOk(email):
   url = "localhost:3000/api/user/login"
 
   payload='email=a%40a.aa&password=1234'
@@ -29,7 +25,7 @@ def idCheckOk(id, con):
     return False
 
 # 구현 해야됨
-def JoinOk(id, password, name, con):
+def JoinOk(email, password, name):
   if True:
     return True
   else:
@@ -38,27 +34,25 @@ def JoinOk(id, password, name, con):
 ########## login Class ##########
 
 # 구현 해야됨
-def LoginOk(id, password):
+def LoginOk(email, password):
   return True
 
 ########## Home Class ##########
 
 def user_delete(user):
-  id = user.getId
+  email = user.getEmail
   password = user.getPassword()
-  con = user.getCon()
-  
-  return isDelteUser(id, password, con)  
+
+  return isDelteUser(email, password)
   # 서버에서 유저를 삭제함
 
 # 구현 해야됨
-def isDelteUser(id, password, con):
+def isDelteUser(email, password):
   return True
 
 def get_user_history(user):
-  id = user.get('id')
-  con = user.get('con')
-  
+  email = user.getEmail()
+
   # history 리스트 안에 [{"title": "test document title","page": 2,"state": "인쇄중","submit_at": "2023-02-23T15:44:04.000Z"}, {"title": "test document title","page": 3,"state":"인쇄중","submit_at": "2023-02-23T15:42:55.000Z"}] 형식으로 저장(튜플들을 저장)
   history=[]
   

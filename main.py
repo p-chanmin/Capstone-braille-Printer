@@ -3,13 +3,12 @@ from src.gui.CreateUserClass import CreateUser
 from src.gui.HomeClass import Home
 from src.gui.LoginClass import Login
 from src.gui.UserClass import User
+from src.gui.BrailleInfoClass import BrailleCharInfo
 
-con = serverFunction.getConnect()
 
 while True:
   # 로그인  UI 상태 //  로그인 성공,eInstance.password, con)
-  print("로구인 성공")
-  login = Login(con)
+  login = Login()
   # 성공인 상황 / 회원가입 해야하는 상황 / 아무것도 아닌 상황
   stateInstance = login.start()
 
@@ -23,8 +22,8 @@ while True:
     # homeUI에서 종료를 누르면 그 자리에서 프로그램이 종료되서 여기로 안옴
     home.start()
     
-  elif stateInstance.state== StateClass.State.CREATEUSER: # 회원가입 ㄱㄱ
-    creatU = CreateUser(con)
+  elif stateInstance.state == StateClass.State.CREATEUSER: # 회원가입 ㄱㄱ
+    creatU = CreateUser()
     creatU.start()
   else:
     print("뭔가 잘못됨")

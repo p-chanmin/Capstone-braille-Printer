@@ -3,7 +3,14 @@ import tkinter.ttk as ttk
 from tkinter import filedialog # 파일 선택 (__all__에 없어서), 파일창
 import tkinter.messagebox as msgbox
 
+
+from src.gui.BrailleInfoClass import BrailleCharInfo
+from src.braille.braillePrint import CheckText
+from src.braille.translate import translate
+
+
 from src.gui import serverFunction, homeFunction
+from src.gui.UserClass import User
 from src.gui.UserFormerInfoClass import UserFormerInfo
 
 
@@ -11,12 +18,14 @@ class Home:
   def __init__(self, user):
     self.__user = user
     self.__window=self.__createUI()
-    
-    self.word_list = []
-    
+
     #self.text_place내에 있던 문자들 중에 점자 번역 매칭 안되는 문자들에 대한 text내 인덱스를 가지고 있는 리스트
     self.incorrect_word_list = []
-    
+
+    self.BCInstance = BrailleCharInfo(self)
+    self.start()
+    # self.start()
+
   def __createUI(self):
     root = Tk()
     root.title("braille printer GUI")
@@ -40,6 +49,10 @@ class Home:
     menu_2.add_command(label="종료", command= self.quit)
     menu.add_cascade(label="더보기", menu=menu_2)
 
+    menu_3 = Menu(menu, tearoff=0)
+    menu_3.add_command(label="특수문자 도움말", command=lambda : self.show_brailleChar_info(self))
+    menu.add_cascade(label="도움말", menu=menu_3)
+
     root.config(menu=menu)
 
 
@@ -50,9 +63,9 @@ class Home:
     label = Label(labelFrame, text='braille printer GUI')
     label.pack()
     
-    user_id =  self.__user.getId()
-    id_label = Label(labelFrame, text="id "+user_id)
-    id_label.pack(fill='x', side='right')
+    user_email =  self.__user.getEmail()
+    email_label = Label(labelFrame, text="email "+user_email)
+    email_label.pack(fill='x', side='right')
 
     # Text Fraem {scrollbar, text_place 2개가 들어감}
 
@@ -76,7 +89,7 @@ class Home:
     left_button_frame.pack(fill='x', padx=5, pady=5, side='left')
     
     # -------------- left_button_frame 버튼 1행 --------------
-    double_quotationLeft_button = Button(left_button_frame, width=2, height=1, text="“\n여는큰따옴표", command=lambda :self.text_place.insert(END, "“"))
+    double_quotationLeft_button = Button(left_button_frame, width=2, height=1, text="“", command=lambda :self.text_place.insert(END, "“"))
     double_quotationRight_button = Button(left_button_frame, width=2, height=1, text="”", command=lambda :self.text_place.insert(END, "”"))
     single_quotationLeft_button = Button(left_button_frame, width=2, height=1, text="‘", command=lambda :self.text_place.insert(END, "‘"))
     single_quotationRight_button = Button(left_button_frame, width=2, height=1, text="’", command=lambda :self.text_place.insert(END, "’"))
@@ -192,8 +205,8 @@ class Home:
     pass
     
   def user_delete(self):
-    id = self.__user.getId()
-    response = msgbox.askyesno(title="회원 탈퇴", message=f"{id} 회원을 탈퇴합니다")
+    email = self.__user.getEmail()
+    response = msgbox.askyesno(title="회원 탈퇴", message=f"{email} 회원을 탈퇴합니다")
     
     if(response):
       isDelUser = serverFunction.user_delete(self.__user)
@@ -202,8 +215,12 @@ class Home:
         self.exit()
       else:
         msgbox.showerror(title="탈퇴 실패", message="탈퇴에 실패했습니다")
-  ############################# mode function ###################################
 
+  def show_brailleChar_info(self, hoemClassInstance):
+    BrailleCharInfo(hoemClassInstance).start()
+
+
+  ############################# mode function ###################################
   
   def mode_function(self):
     num = self.write_var.get()
@@ -254,11 +271,42 @@ class Home:
   def check_braille_grammar(self):
     
     string = self.text_place.get("1.0", END)
-    #워드리스트 최신화(파일들 로딩하고 바꿨을 가능성, 작성모드했으면 아예 워드 리스트에 아무것도 없어서)
-    self.word_list =  homeFunction.get_string(string)
-    print(self.word_list)
-    pass
-    
+
+    # 문자열이 완벽하면 true / 고쳐야될 부분 있으면 해당인덱스를 포함하는 리스트 반환
+    lst = CheckText(string)
+
+    if(lst == True):
+      msgbox.showinfo(title="점자 해독 가능", message="점자 해독이 가능합니다. 오른쪽에 점역 버튼을 눌러주세요")
+    else:
+      count=0
+      string = self.text_place.get("1.0", END)
+      self.text_place.delete("1.0", END)
+      print("지움")
+
+      past_idx = 0
+      cur_idx = len(lst)
+      markIdx_lst = []
+      for i in range(len(lst)):
+        cur_idx = lst[i]
+
+        self.text_place.insert(END, string[past_idx:cur_idx])
+        markIdx_lst.append(self.text_place.index(CURRENT))
+
+        self.text_place.insert(END, string[cur_idx])
+        past_idx = cur_idx + 1
+
+      if past_idx < len(string):
+        self.text_place.insert(END, string[past_idx:])
+
+      for idx in markIdx_lst:
+        size = len("".join(idx).split(".")[-1])
+        idx2 = round(float(idx) + 10 ** (-size), size + 1)
+        self.text_place.tag_add("강조", idx, idx2)
+      self.text_place.tag_config("강조", background="yellow")
+
+      msgbox.showerror(title="점자 해독 불가", message="점자 해독이 불가능 합니다")
+
+
   def go2Left(self):
     pass  
   
@@ -267,7 +315,15 @@ class Home:
   
   # 점자 미리보기 구현 함수
   def braille_review(self):
-    pass
+    string = self.text_place.get("1.0", END)
+    if (CheckText(string)):
+      tanslated_braille = translate(string)
+      self.braille_place.config(state="normal")
+      self.braille_place.delete("1.0", END)
+      self.braille_place.insert(END, tanslated_braille)
+      self.braille_place.config(state="disabled")
+    else:
+      msgbox.showerror(title="점자 해독 불가", message="점자 해독이 불가능 합니다")
   
   ############################# arduino function ###################################
   def startPrint(self):
@@ -276,7 +332,7 @@ class Home:
 
   ############################# process function ###################################  
   def start(self):
-    self.__window.mainloop() 
+    self.__window.mainloop()
     
   
   def exit(self):
@@ -287,6 +343,6 @@ class Home:
     
 #####################################################################################
  
-# user = User("JW","asdasd",True)
-# home = Home(user)
-# home.start()
+user = User("JW","asdasd")
+home = Home(user)
+home.start()
