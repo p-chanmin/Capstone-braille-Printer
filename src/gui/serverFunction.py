@@ -1,59 +1,144 @@
 import tkinter.messagebox as msgbox
 import requests
 
-# 서버거랑 유저가 입력한 아이디와 패스워드가 일치하는지
-# con: 서버와 연결해주는 커넥터
-
-# 서버와 연결해주는 커넥터 반환
-# 구현 해야됨
+ENDPOINT = "http://43.200.80.26:3000"
 
 ########## createAddr Class ##########
 
-# 구현 해야됨
-def idCheckOk(email):
-  url = "localhost:3000/api/user/login"
+def JoinOk(tmp_email, tmp_password, tmp_name):
+  url = f'{ENDPOINT}/api/user/register'
 
-  payload='email=a%40a.aa&password=1234'
   headers = {}
+  email = tmp_email
+  password = tmp_password
+  name = tmp_name
 
-  response = requests.request("POST", url, headers=headers, data=payload)
+  data = {"email": email, "password": password, "name": name}
 
-  print(response.text)
-  if True:
-    return True
+  response = requests.request("POST", url, headers=headers, data=data)
+
+  if response.status_code == 200:
+    if response.text == '{"result":"이미 가입된 이메일입니다."}':
+      return False
+    else:
+      return True
   else:
     return False
-
-# 구현 해야됨
-def JoinOk(email, password, name):
-  if True:
-    return True
-  else:
-    return True
 
 ########## login Class ##########
 
 # 구현 해야됨
-def LoginOk(email, password):
-  return True
+def LoginOk(tmp_email, tmp_password):
+  url = f'{ENDPOINT}/api/user/login'
+
+  headers = {}
+  email = tmp_email
+  password = tmp_password
+  data = {"email": email, "password": password}
+  response = requests.request("POST", url, headers=headers, data=data)
+
+  token = response.text
+
+  if response.status_code == 200:
+    if response.text == '{"result":"fail"}':
+      return (False, token)
+    else:
+      return (True, token)
+  else:
+    return (False, token)
 
 ########## Home Class ##########
 
-def user_delete(user):
-  email = user.getEmail
-  password = user.getPassword()
+def get_user_info(user):
+  url = f'{ENDPOINT}/api/user'
 
-  return isDelteUser(email, password)
-  # 서버에서 유저를 삭제함
+  token = user.getToken()
+
+  headers = {"token": token}
+  data = {}
+  response = requests.request("GET", url, headers=headers, params=data)
+
+  u_info= None
+  if response.status_code == 200:
+    # dict 형태 key{result, id, email, name}
+    u_info = response.json()
+  return u_info
+
+def user_delete(user):
+  url = f'{ENDPOINT}/api/user'
+
+  token = user.getToken()
+  headers = {"token":token}
+  data={}
+  response = requests.request("DELETE", url, headers=headers, params=data)
+
+  if response.status_code == 200:
+    return True
+  return False
 
 # 구현 해야됨
 def isDelteUser(email, password):
   return True
 
-def get_user_history(user):
-  email = user.getEmail()
+def submit_print_document(user, tmp_title, tmp_page):
+  url = f'{ENDPOINT}/api/print'
+
+  token = user.getToken()
+  headers = {"token":token}
+
+  title= tmp_title
+  page = tmp_page
+
+  data={"title":title, "page":page}
+  response = requests.request("POST", url, headers=headers, data=data)
+
+  if response.status_code == 200:
+    return True
+
+  return False
+
+def get_print_documents(user):
+  url = f'{ENDPOINT}/api/print'
+
+  token = user.getToken()
+
+  headers = {"token": token}
+  data = {}
+
+  response = requests.request("GET", url, headers=headers, params=data)
 
   # history 리스트 안에 [{"title": "test document title","page": 2,"state": "인쇄중","submit_at": "2023-02-23T15:44:04.000Z"}, {"title": "test document title","page": 3,"state":"인쇄중","submit_at": "2023-02-23T15:42:55.000Z"}] 형식으로 저장(튜플들을 저장)
-  history=[]
-  
+
+  if response.status_code == 200:
+    print(response.json())
+    history = response.json()['result']
   return history
+
+def alter_print_document(user, tmp_id, tmp_state):
+  url = f'{ENDPOINT}/api/print'
+
+  token = user.getToken()
+  headers = {"token":token}
+
+  id = tmp_id
+  state= tmp_state
+  data={"id":id, "state":state}
+
+  response = requests.request("PUT", url, headers=headers, data=data)
+  if response.status_code == 200:
+    return True
+  return False
+
+def delete_print_document(user, tmp_id):
+  url = f'{ENDPOINT}/api/print'
+
+  token = user.getToken()
+  headers = {"token":token}
+
+  id = tmp_id
+  data={"id":id}
+
+  response = requests.request("DELETE", url, headers=headers, data=data)
+  if response.status_code == 200:
+    return True
+  return False

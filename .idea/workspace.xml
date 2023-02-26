@@ -5,11 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b0dc4ce5-5407-48b6-8771-575491c48c16" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/gui/CharThreadClass.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/gui/DocumentPrintDeleteClass.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/gui/DocumentPrintModifyClass.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/gui/PrintDocumentClass.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/BrailleInfoClass.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/SpecialCharacterUIClass.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/CreateUserClass.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/CreateUserClass.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/gui/HomeClass.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/HomeClass.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/LoginClass.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/LoginClass.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/StateClass.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/StateClass.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/UserClass.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/UserClass.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/UserFormerInfoClass.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/DocumentPrintClass.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/dummy.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/dummy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/serverFunction.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/serverFunction.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +50,7 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.HomeClass">
+  <component name="RunManager" selected="Python.main">
     <configuration name="HomeClass" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="braillePrinter" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -171,10 +179,10 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.dummy" />
         <item itemvalue="Python.HomeClass" />
         <item itemvalue="Python.translate" />
         <item itemvalue="Python.braillePrint" />
-        <item itemvalue="Python.dummy" />
         <item itemvalue="Python.SpecialCharacterUIClass" />
       </list>
     </recent_temporary>
@@ -194,9 +202,14 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/gui/dummy.py</url>
-          <line>11</line>
-          <option name="timeStamp" value="11" />
+          <url>file://$PROJECT_DIR$/src/gui/DocumentPrintDeleteClass.py</url>
+          <line>76</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/gui/DocumentPrintDeleteClass.py</url>
+          <line>86</line>
+          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -6,14 +6,12 @@ from src.gui.StateClass import State
 
 
 class Login:
-  
-
-  
   def __init__(self):
     self.__window=self.__createUI()
 
     self.__tmp_email = None
     self.__tmp_password = None
+    self.__tmp_token = None
 
     # 로그인 확인 여부
     self.state = None
@@ -64,7 +62,8 @@ class Login:
     if self.state == StateClass.State.LOGINOK:
       email = self.__tmp_email
       password = self.__tmp_password
-      return State(StateClass.State.LOGINOK, email, password)
+      token = self.__tmp_token
+      return State(StateClass.State.LOGINOK, token, email, password)
     
     elif self.state == StateClass.State.CREATEUSER:
       return State(StateClass.State.CREATEUSER)
@@ -87,13 +86,20 @@ class Login:
       
       self.__tmp_email = None
       self.__tmp_password = None
+      self.__tmp_token = None
       return
-    
+
+    # 로그인 성공여부, 토큰이 반환되는 튜플
+    tmp = serverFunction.LoginOk(self.__tmp_email, self.__tmp_password)
+    isOk = tmp[0]
+    token = tmp[1]
+
     #로그인 완료되면 다음단계로 ㄱㄱ
-    if serverFunction.LoginOk(self.__tmp_email,self.__tmp_password):
+    if isOk:
       self.ok = True
-      self.__end()
       self.state = StateClass.State.LOGINOK
+      self.__tmp_token = token
+      self.__end()
     else: #경고 메세지
       msgbox.showwarning(title="경고", message="아이디 또는 비밀번호가 올바르지 않습니다.")
 

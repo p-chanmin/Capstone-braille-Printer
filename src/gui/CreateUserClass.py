@@ -54,13 +54,14 @@ class CreateUser:
     return 
   
   ############### event functions #################
-  def __idCheck(self):
-    #db에서 아이디 중복검사 통과했나 확인
-    if(serverFunction.idCheckOk(self.__email_entry.get())):
-      msgbox.showinfo(title="확인완료", message="사용가능한  입니다")
-    else:
-      msgbox.showwarning(title="에러", message="중복된 아이디가 있습니다")
-      self.__email_entry.delete("0.0", END)
+
+  # def __idCheck(self):
+  #   #db에서 아이디 중복검사 통과했나 확인
+  #   if(serverFunction.idCheckOk(self.__email_entry.get())):
+  #     msgbox.showinfo(title="확인완료", message="사용가능한  입니다")
+  #   else:
+  #     msgbox.showwarning(title="에러", message="중복된 아이디가 있습니다")
+  #     self.__email_entry.delete("1.0", END)
 
   def __CreateAddress(self):
     email = self.__email_entry.get()
@@ -77,9 +78,10 @@ class CreateUser:
       return
       
     else:
-      msgbox.showerror(title="생성 불가", message="회원가입이 거부되었습니다\n"+"다시 시도해 주세요")
-      
-      self.__email_entry.delete("0.0", END)
-      self.__password_entry.delete("0.0", END)
-      self.__name_entry.delete("0.0", END)
+      msgbox.showerror(title="생성 불가", message="동일한 이메일이 있습니다\n다른 이메일을 입력해 주세요")
+
+
+      self.__email_entry.delete(0, END)
+      self.__password_entry.delete(0, END)
+      self.__name_entry.delete(0, END)
       return

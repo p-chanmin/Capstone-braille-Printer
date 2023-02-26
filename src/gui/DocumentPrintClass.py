@@ -2,7 +2,7 @@ from tkinter import *
 
 
 
-class UserFormerInfo:
+class DocumentPrint:
   def __init__(self, historyList):
     self.historyList = historyList
     self.size = len(historyList)
@@ -34,15 +34,18 @@ class UserFormerInfo:
     # "state": "인쇄중",
     # "submit_at": "2023-02-23T15:42:55.000Z"
     for history in self.historyList:
+      id = history['id']
       title = history['title']
       page = history['page']
       state = history['state']
       submit_at = history['submit_at']
       string = \
-      f'title: {title}\n\
-      page: {page}\n\
-      state: {state}\n\
-      submit_at: {submit_at}\n\
+      f'\
+      id:         {id}\n\
+      title:      {title}\n\
+      page:       {page}\n\
+      state:      {state}\n\
+      submit_at:  {submit_at}\n\
       ===============================\n\n\n'
       text_place.insert(END, string)
     

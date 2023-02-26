@@ -14,7 +14,10 @@ from src.braille.translate import translate
 from src.gui.CharThreadClass import CharThreadClass
 from src.gui import serverFunction, homeFunction
 from src.gui.UserClass import User
-from src.gui.UserFormerInfoClass import UserFormerInfo
+from src.gui.DocumentPrintClass import DocumentPrint
+from src.gui.DocumentPrintModifyClass import DocumentPrintModify
+from src.gui.DocumentPrintDeleteClass import DocumentPrintDelete
+
 
 class Home(threading.Thread):
   def __init__(self, user):
@@ -35,17 +38,20 @@ class Home(threading.Thread):
     menu.config(background='blue')
     
     menu_1 = Menu(menu, tearoff=0)
-    menu_1.add_command(label="인쇄정보", command=self.print_information_function)
-    menu_1.add_separator()
-    menu_1.add_command(label="내 정보 더보기", command=self.more_my_information_function)
-    menu.add_cascade(label="내 정보", menu=menu_1)
+    menu_1.add_command(label="인쇄 문서 기록 확인", command=self.print_information_function)
+    menu_1.add_command(label="인쇄 문서 상태 변경", command=self.print_information_state_modify_function)
+    menu_1.add_command(label="인쇄 문서 기록 삭제", command=self.print_information_delete_function)
+
+    menu.add_cascade(label="인쇄 정보", menu=menu_1)
 
     menu_2 = Menu(menu, tearoff=0)
+    menu_2.add_command(label="내 정보 더보기", command=self.more_my_information_function)
+    menu_2.add_separator()
     menu_2.add_command(label="로그아웃", command=self.exit)
     menu_2.add_command(label="회원 탈퇴", command=self.user_delete)
     menu_2.add_separator()
     menu_2.add_command(label="종료", command= self.quit)
-    menu.add_cascade(label="더보기", menu=menu_2)
+    menu.add_cascade(label="내 정보", menu=menu_2)
 
     menu_3 = Menu(menu, tearoff=0)
     menu_3.add_command(label="특수문자 도움말", command=lambda : self.createSpecialChacterUI())
@@ -166,31 +172,58 @@ class Home(threading.Thread):
   
   # 이전 프린트 목록 보여주기
   def print_information_function(self):
-    # 리스트형식이고, 안에는 튜플들(이전에 인쇄정보들에 대한)이 있응
-    #historyList = serverFunction.get_user_history()
-    historyList = [{"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}]
-    
-    # 못받아오면 경고
-    if historyList is None:
+
+    #historyList = [{"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}]
+    historyList = serverFunction.get_print_documents(self.__user)
+
+    # 못받아오면 경고 // 아무것도 없으면 경고
+    if historyList is None or len(historyList) ==0:
       msgbox.showerror(title="불러오기 실패", message="불러오기를 실패했습니다.")
     else:
-      uInfo = UserFormerInfo(historyList)
+      uInfo = DocumentPrint(historyList)
       uInfo.start()
-      
+
+  def print_information_state_modify_function(self):
+    # historyList = [{"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}]
+    historyList = serverFunction.get_print_documents(self.__user)
+
+    # 못받아오면 경고 // 아무것도 없으면 경고
+    if historyList is None or len(historyList) == 0:
+      msgbox.showerror(title="불러오기 실패", message="불러오기를 실패했습니다.")
+    else:
+      uInfo = DocumentPrintModify(historyList)
+      uInfo.start()
+
+  def print_information_delete_function(self):
+    # historyList = [{"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}]
+    historyList = serverFunction.get_print_documents(self.__user)
+
+    # 못받아오면 경고 // 아무것도 없으면 경고
+    if historyList is None or len(historyList) == 0:
+      msgbox.showerror(title="불러오기 실패", message="불러오기를 실패했습니다.")
+    else:
+      uInfo = DocumentPrintDelete(self.__user, historyList)
+      uInfo.start()
+
   def more_my_information_function(self):
-    pass
-    
+    # None or dict
+    u_dict = serverFunction.get_user_info(self.__user)
+
+    if u_dict is None or u_dict['result'] !='ok':
+      msgbox.showerror(title="불러오기 실패", message="불러오기를 실패했습니다.")
+    else:
+      msgbox.showinfo(title="유저 정보", message=f"email: {u_dict['email']}\nname: {u_dict['name']}")
   def user_delete(self):
     email = self.__user.getEmail()
-    response = msgbox.askyesno(title="회원 탈퇴", message=f"{email} 회원을 탈퇴합니다")
+    question = msgbox.askyesno(title="회원 탈퇴", message=f"{email} 회원을 탈퇴합니다")
     
-    if(response):
+    if(question):
       isDelUser = serverFunction.user_delete(self.__user)
       if(isDelUser):
-        msgbox.showinfo(title="탈퇴 성공", message="탈퇴에 성공했습니다")
+        msgbox.showinfo(title="탈퇴 성공", message="회원 탈퇴에 성공했습니다")
         self.exit()
       else:
-        msgbox.showerror(title="탈퇴 실패", message="탈퇴에 실패했습니다")
+        msgbox.showerror(title="탈퇴 실패", message="회원 탈퇴에 실패했습니다")
 
   ############################# mode function ###################################
   
@@ -314,13 +347,10 @@ class Home(threading.Thread):
     
   
   def exit(self):
+    del(self.__user)
     self.__window.destroy()
 
   def quit(self):
     self.__window.quit()
     
 #####################################################################################
- 
-user = User("JW","asdasd")
-h = Home(user)
-h.start()

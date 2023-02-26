@@ -3,7 +3,7 @@ from src.gui.CreateUserClass import CreateUser
 from src.gui.HomeClass import Home
 from src.gui.LoginClass import Login
 from src.gui.UserClass import User
-from src.gui.SpecialCharacterUIClass import BrailleCharInfo
+from src.gui.SpecialCharacterUIClass import SpecialCharacterUI
 
 
 while True:
@@ -13,7 +13,7 @@ while True:
   stateInstance = login.start()
 
   if stateInstance.state == StateClass.State.LOGINOK: # 로그인 성공
-    user = User(stateInstance.id, stateInstance.password)
+    user = User(stateInstance.token, stateInstance.id, stateInstance.password)
     home = Home(user)
     
     # homeUI에서 로그아웃을 누르면 다시 if문을 빠져나가서 wile 무한루프로 들어감
@@ -26,6 +26,5 @@ while True:
     creatU = CreateUser()
     creatU.start()
   else:
-    print("뭔가 잘못됨")
-    break 
+    break
 
