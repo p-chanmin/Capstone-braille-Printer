@@ -53,3 +53,5 @@ def get_txt(filepath):
 def get_string(string):
   words_list = [(c, ord(c))    for c in string]
   return words_list
+
+
