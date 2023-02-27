@@ -11,7 +11,7 @@ from src.gui.SpecialCharacterUIClass import SpecialCharacterUI
 from src.braille.braillePrint import CheckText
 from src.braille.translate import translate
 
-from src.gui.CharThreadClass import CharThreadClass
+from src.gui.CharThreadClass import CharThread
 from src.gui import serverFunction, homeFunction
 from src.gui.UserClass import User
 from src.gui.DocumentPrintClass import DocumentPrint
@@ -19,13 +19,16 @@ from src.gui.DocumentPrintModifyClass import DocumentPrintModify
 from src.gui.DocumentPrintDeleteClass import DocumentPrintDelete
 
 
-class Home(threading.Thread):
+class Home():
   def __init__(self, user):
     self.__user = user
     self.__window=self.__createUI()
 
     #self.text_place내에 있던 문자들 중에 점자 번역 매칭 안되는 문자들에 대한 text내 인덱스를 가지고 있는 리스트
     self.markIdx_lst = []
+    self.Ungrammatical_ch_count = -1
+    self.Ungrammatical_ch_idxList = []
+    self.Ungrammatical_string = None
 
   def __createUI(self):
     root = Tk()
@@ -105,10 +108,12 @@ class Home(threading.Thread):
     
     # -------------- right_button_frame 버튼 1행 --------------
     check_button = Button(right_button_frame, width=5, pady=2, text="검사", command=self.check_braille_grammar)
+    self.ungramatic_cnt_label = Label(right_button_frame, width=30, pady=2, text=f'문법 오류 개수: 0개')
     Braille_button = Button(right_button_frame, width=5, pady=2, text="점역", command=self.braille_review)
 
     # -------------- right_button_frame 버튼 배치 --------------
     check_button.grid(row=0, column=0, padx=2 ,pady=2)
+    self.ungramatic_cnt_label.grid(row=0, column=1, padx=2, pady=2)
     Braille_button.grid(row=0, column=3, padx=2 ,pady=2)
 
   # -------------- braille Fraem --------------
@@ -277,19 +282,30 @@ class Home(threading.Thread):
     SpecialCharacterUI(self).start()
   ############################# right button function ###################################
   def check_braille_grammar(self):
-    
     string = self.text_place.get("1.0", END)
+
+    self.Ungrammatical_ch_count = -1
+    self.Ungrammatical_ch_idxList = []
+    self.Ungrammatical_string = None
+
+
 
     # 문자열이 완벽하면 true / 고쳐야될 부분 있으면 해당인덱스를 포함하는 리스트 반환
     lst = CheckText(string)
     self.markIdx_lst = []
     if(lst == True):
+      self.Ungrammatical_ch_count = 0
       msgbox.showinfo(title="점자 해독 가능", message="점자 해독이 가능합니다. 오른쪽에 점역 버튼을 눌러주세요")
     else:
+      print("오류오류!!!!!")
+      print(lst)
       count=0
       string = self.text_place.get("1.0", END)
       self.text_place.delete("1.0", END)
-      print("지움")
+
+      self.Ungrammatical_ch_count = len(lst)
+      self.Ungrammatical_ch_idxList = lst
+      self.Ungrammatical_string = string
 
       past_idx = 0
       cur_idx = 0
@@ -312,9 +328,10 @@ class Home(threading.Thread):
       self.text_place.tag_config("강조", background="yellow")
 
       msgbox.showerror(title="점자 해독 불가", message="점자 해독이 불가능 합니다")
+      self.createCharThread()
 
-  def createCharThread(self, instance):
-    t = CharThreadClass(instance)
+  def createCharThread(self):
+    t = CharThread(self)
     t.daemon = True
     t.start()
   def go2Left(self):
@@ -342,7 +359,6 @@ class Home(threading.Thread):
 
   ############################# process function ###################################  
   def start(self):
-    # self.createCharThread(self)
     self.__window.mainloop()
     
   
