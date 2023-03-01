@@ -54,4 +54,27 @@ def get_string(string):
   words_list = [(c, ord(c))    for c in string]
   return words_list
 
+def switchIdx2TkIdx(string, original_idx_lst):
+  # 문자열, 일반적인 인덱스를 담고 있는 리스트
+  idx_lst = original_idx_lst
+  idx = 0
 
+  tkinter_idx_lst = []
+  tkinter_idx = 0
+
+  text_string = string
+  total_length = 0
+  row = 1
+
+  for string in text_string.split('\n'):
+    length = len(string) + 1
+    while (idx < len(idx_lst) and total_length + length > idx_lst[idx]):
+      col = idx_lst[idx] - total_length
+      tk_idx = f"{row}.{col}"
+      tkinter_idx_lst.append(tk_idx)
+      idx += 1
+
+    row += 1
+    total_length += length
+
+  return tkinter_idx_lst
