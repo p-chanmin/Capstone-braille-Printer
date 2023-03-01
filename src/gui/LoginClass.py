@@ -24,8 +24,8 @@ class Login:
     window.resizable(False, False)
 
     canvas = Canvas(window, width=200, height=200, background="white")
-    image = PhotoImage(file='src/images/logo.png')
-    canvas.create_image(100,100,image=image)
+    image = PhotoImage(file='./src/images/logo.png')
+    # canvas.create_image(100,100,image=image)
     canvas.grid(row=0, column=1)
 
     #Label

@@ -1,5 +1,9 @@
 from tkinter import *
 import threading
+from src.braille.braillePrint import CheckText
+from src.gui import homeFunction
+import tkinter.messagebox as msgbox
+
 import time
 
 from src.braille.braillePrint import CheckText
@@ -11,50 +15,76 @@ class CharThread(threading.Thread):
         self.count = 0
 
     def run(self):
-        print('thread run')
-        ungramatic_idx_lst = self.homeInstance.Ungrammatical_ch_idxList
-        past_ungramatic_string = self.homeInstance.Ungrammatical_string
+        # 원본 스트링 일반 인덱스 적용
+        # 수정 스트링 일반 인덱스 적용
+        print("thread Run!")
+        homeInstance = self.homeInstance
 
-        past_string_cnt = len(self.homeInstance.text_place.get("1.0", END))
+        original_string = homeInstance.text_place.get("1.0", END)
+        # 원본 스트링에 대한 Tk인덱스 리스트["1.4", "3.2"]
+        original_idxList = homeInstance.Ungrammatical_ch_idxList
 
-        try:
-            print(len(past_ungramatic_string), past_string_cnt)
-        except TypeError as e:
-            past_ungramatic_string=[]
-            print(len(past_ungramatic_string), past_string_cnt)
 
-        cur_ungramatic_idx_lst = ungramatic_idx_lst
-        while(len(ungramatic_idx_lst) > 0):
-            cur_string = self.homeInstance.text_place.get("1.0", END)
-            difference = (len(cur_string) -1)- len(past_ungramatic_string)
+        while len(original_idxList) > 0:
+            cur_string = homeInstance.text_place.get("1.0", END)
+            # 수정 스티링에 대한 Tk인덱스 리스트
+            cur_idxList = CheckText(cur_string)
 
-            print("31")
-            print(cur_ungramatic_idx_lst)
-            if difference != 0:
-                cur_ungramatic_idx_lst = list(map(lambda x:x+1, cur_ungramatic_idx_lst))
-            print("33")
-            print(cur_ungramatic_idx_lst)
-            del_idx = []
-            for past_idx, cur_idx in zip(ungramatic_idx_lst, cur_ungramatic_idx_lst):
-                if past_ungramatic_string[past_idx] == cur_string[cur_idx]:
-                    pass
-                else: # 틀린 문법 고쳤음
-                    del_idx.append((past_idx, cur_idx))
-            print("43")
-            print(del_idx)
-
-            try:
-                for idx in del_idx[::-1]:
-                    del ungramatic_idx_lst[idx[0]]
-                    del cur_ungramatic_idx_lst[idx[1]]
-            except IndexError as e:
+            if cur_idxList == True:
                 break
 
-            print("49")
-            print(ungramatic_idx_lst)
-            self.homeInstance.ungramatic_cnt_label.config(text=f'문법 오류 개수: {len(ungramatic_idx_lst)}개')
+            homeInstance.ungramatic_cnt_label.config(text=f"문법 오류 개수: {len(cur_idxList)}개")
 
-        print("end")
+        msgbox.showinfo(title="오류 제거 완료", message="오류가 모두 제거 되었습니다.\n검사 버튼을 다시 눌러 주세요")
+        homeInstance.ungramatic_cnt_label.config(text=f"문법 오류 개수: {0}개")
+
+
+    #============== 찐===============
+    # def run(self):
+    #     print('thread run')
+    #     ungramatic_idx_lst = self.homeInstance.Ungrammatical_ch_idxList
+    #     past_ungramatic_string = self.homeInstance.Ungrammatical_string
+    #
+    #     past_string_cnt = len(self.homeInstance.text_place.get("1.0", END))
+    #
+    #     try:
+    #         print(len(past_ungramatic_string), past_string_cnt)
+    #     except TypeError as e:
+    #         past_ungramatic_string=[]
+    #         print(len(past_ungramatic_string), past_string_cnt)
+    #
+    #     cur_ungramatic_idx_lst = ungramatic_idx_lst
+    #     while(len(ungramatic_idx_lst) > 0):
+    #         cur_string = self.homeInstance.text_place.get("1.0", END)
+    #         difference = (len(cur_string) -1)- len(past_ungramatic_string)
+    #
+    #         print("31")
+    #         print(cur_ungramatic_idx_lst)
+    #         if difference != 0:
+    #             cur_ungramatic_idx_lst = list(map(lambda x:x+1, cur_ungramatic_idx_lst))
+    #         print("33")
+    #         print(cur_ungramatic_idx_lst)
+    #         del_idx = []
+    #         for past_idx, cur_idx in zip(ungramatic_idx_lst, cur_ungramatic_idx_lst):
+    #             if past_ungramatic_string[past_idx] == cur_string[cur_idx]:
+    #                 pass
+    #             else: # 틀린 문법 고쳤음
+    #                 del_idx.append((past_idx, cur_idx))
+    #         print("43")
+    #         print(del_idx)
+    #
+    #         try:
+    #             for idx in del_idx[::-1]:
+    #                 del ungramatic_idx_lst[idx[0]]
+    #                 del cur_ungramatic_idx_lst[idx[1]]
+    #         except IndexError as e:
+    #             break
+    #
+    #         print("49")
+    #         print(ungramatic_idx_lst)
+    #         self.homeInstance.ungramatic_cnt_label.config(text=f'문법 오류 개수: {len(ungramatic_idx_lst)}개')
+    #
+    #     print("end")
 
     ## override
     # def run(self):
