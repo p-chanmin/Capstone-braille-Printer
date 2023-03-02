@@ -3,6 +3,9 @@ import src.braille.brailleDB as db
 from src.braille import hangul
 import numpy as np
 
+from src.braille.translate import translate
+
+
 def CheckText(text):
     """
     문자열에서 점역이 불가능한 문자가 있는지 검사하는 함수
@@ -88,6 +91,7 @@ def transfrom_to_braille(braille_text, horizontal = 32):
 
         words_list.append(word)  # horizontal글자 이하인 단어는 그대로 추가
 
+    print(words_list)
     # 최대 길이 horizontal으로 나누기
     lines = []
     line = ''
@@ -101,13 +105,13 @@ def transfrom_to_braille(braille_text, horizontal = 32):
         if "\n" in word:
             split_words = word.split("\n")
             for i, split_word in enumerate(split_words):
-                if len(line) + len(split_word) > horizontal:
+                if len(line) + len(split_word) + 1 > horizontal:
                     lines.append(line)
                     line = ""
-                if i == len(split_words) - 1:
-                    line += split_word
                 else:
-                    lines.append(split_word)
+                    if line:
+                        line += " "
+                    line += split_word
         # 그렇지 않으면 공백으로 단어 추가
         else:
             if line:
@@ -172,15 +176,16 @@ def get_page(braille_text, vertical = 26):
     line = len(braille_text.split("\n"))
     return line//vertical if(line%vertical == 0) else line//vertical + 1
 
-test_text = "⠼⠉⠴⠠⠙⠲⠀⠙⠪⠐⠟⠓⠎⠤⠤⠼⠉⠰⠣⠏⠒⠀⠠⠞⠈⠌⠊⠥⠐⠮⠀⠘⠥⠈⠥⠀⠕⠃⠰⠝⠨⠹⠟⠀⠑⠯⠈⠾⠮⠀⠟⠠⠧⠗⠚⠉⠵⠀⠙⠪⠐⠟⠓⠎\n⠼⠉⠰⠣⠏⠒⠀⠙⠪⠐⠟⠓⠎⠉⠵"
-
-result_str = transfrom_to_braille(test_text, 32)
-result_data = transform_to_print(result_str)
-
-print(result_str)
-print()
-for i in result_data:
-    print(f"{len(i)} : {i}")
-print(get_page(result_str))
+# test_text = "3D 프린터―3차원 설계도를 보고 입체적인 물건을 인쇄하는 프린터\n3차원 프린터는 어떤 원리로 물건을 인쇄할까? 3차원 프린터는 입체적으로 그려진 물건을 마치 미분하듯이 가로로 1만 개 이상 잘게 잘라 분석한다. 그리고 아주 얇은 막(레이어)을 한 층씩 쌓아 물건의 바닥부터 꼭대기까지 완성한다. 잉크젯 프린터가 빨강, 파랑, 노랑 세 가지 잉크를 조합해 다양한 색상을 만드는 것처럼 3차원 프린터는 설계에 따라 레이어의 위치를 조절해 쌓아 올린다. 지금까지 개발된 3차원 프린터는 1시간당 높이 2.8cm를 쌓아 올린다. 레이어의 두께는 약 0.01~0.08mm로 종이 한 장보다도 얇다. 쾌속 조형 방식으로 인쇄한 물건은 맨 눈에는 곡선처럼 보이는 부분도 현미경으로 보면 계단처럼 들쭉날쭉하다. 그래서 레이어가 얇으면 얇을수록 물건이 더 정교해진다."
+# str = translate(test_text)
+# print(str)
+# result_str = transfrom_to_braille(str, 32)
+# result_data = transform_to_print(result_str)
+#
+# print(f"({result_str})")
+# print()
+# for i in result_data:
+#     print(f"{len(i)} : {i}")
+# print(get_page(result_str))
 
 
