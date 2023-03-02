@@ -67,12 +67,12 @@ def braille_to_data(braille: str):
     index = bin((int(hex(ord(braille)), 16) - 0x2800))  # 해당 점자를 16진수로 변환하여 index값을 2진수로 추출
     return index[2:].zfill(6)[::-1] # 2진수 문자열을 8자리 0으로 채우고 역순을 취하여 반환
 
-def transform_to_print(braille_text, horizontal = 32):
+def transfrom_to_braille(braille_text, horizontal = 32):
     """
-    점자 문자열을 출력 데이터폼으로 변경하는 함수
+    점자 문자열을 가로칸에 맞춰 줄바꿈하고, 여백을 점자 공백으로 채우는 함수
         :param braille_text: 점자 문자열
-        :param horizontal: 가로줄의 최대 칸 수
-        :return: 인쇄를 위한 데이터 출력 위치에 1, 아닌 위치는 0인 리스트 반환
+        :param horizontal: 최대 가로칸
+        :return: 최대 가로칸으로 줄바꿈(\n)한 점자 문자열
     """
     # 문자열처리를 위해 점자 공백을 일반 공백으로 변경
     braille_text = braille_text.replace("⠀", " ")
@@ -134,6 +134,18 @@ def transform_to_print(braille_text, horizontal = 32):
             padded_string = s
         # 문자열에서 공백을 데이터화 가능한 점자 공백("⠀")으로 변경
         padded_array.append(padded_string.replace(" ", "⠀"))
+
+    return "\n".join(padded_array)
+
+def transform_to_print(braille_text):
+    """
+    점자 문자열을 출력 데이터폼으로 변경하는 함수
+        :param braille_text: 줄 바꿈 된 점자 문자열
+        :param horizontal: 가로줄의 최대 칸 수
+        :return: 인쇄를 위한 데이터 출력 위치에 1, 아닌 위치는 0인 리스트 반환
+    """
+
+    padded_array = braille_text.split("\n")
 
     result_form = []
     # 각 줄마다 데이터화 하여 인쇄 형태로 변형
