@@ -168,9 +168,19 @@ def transform_to_print(braille_text):
 
     return result_form
 
-result = transform_to_print("⠼⠉⠴⠠⠙⠲⠀⠙⠪⠐⠟⠓⠎⠤⠤⠼⠉⠰⠣⠏⠒⠀⠠⠞⠈⠌⠊⠥⠐⠮⠀⠘⠥⠈⠥⠀⠕⠃⠰⠝⠨⠹⠟⠀⠑⠯⠈⠾⠮⠀⠟⠠⠧⠗⠚⠉⠵⠀⠙⠪⠐⠟⠓⠎\n⠼⠉⠰⠣⠏⠒⠀⠙⠪⠐⠟⠓⠎⠉⠵", 32)
+def get_page(braille_text, vertical = 26):
+    line = len(braille_text.split("\n"))
+    return line//vertical if(line%vertical == 0) else line//vertical + 1
 
-for i in result:
-    print(i)
+test_text = "⠼⠉⠴⠠⠙⠲⠀⠙⠪⠐⠟⠓⠎⠤⠤⠼⠉⠰⠣⠏⠒⠀⠠⠞⠈⠌⠊⠥⠐⠮⠀⠘⠥⠈⠥⠀⠕⠃⠰⠝⠨⠹⠟⠀⠑⠯⠈⠾⠮⠀⠟⠠⠧⠗⠚⠉⠵⠀⠙⠪⠐⠟⠓⠎\n⠼⠉⠰⠣⠏⠒⠀⠙⠪⠐⠟⠓⠎⠉⠵"
+
+result_str = transfrom_to_braille(test_text, 32)
+result_data = transform_to_print(result_str)
+
+print(result_str)
+print()
+for i in result_data:
+    print(f"{len(i)} : {i}")
+print(get_page(result_str))
 
 
