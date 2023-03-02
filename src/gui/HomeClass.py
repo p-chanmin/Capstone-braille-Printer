@@ -9,6 +9,7 @@ import tkinter.messagebox as msgbox
 from src.gui.SpecialCharacterUIClass import SpecialCharacterUI
 from src.braille.braillePrint import CheckText
 from src.braille.translate import translate
+from src.braille import braillePrint
 
 #from src.gui.CharThreadClass import CharThread
 from src.gui import serverFunction, homeFunction
@@ -368,9 +369,10 @@ class Home():
         string = self.text_place.get("1.0", END)
         if (CheckText(string)):
             tanslated_braille = translate(string)
+            transform_braille = braillePrint.transfrom_to_braille(tanslated_braille, 32)
             self.braille_place.config(state="normal")
             self.braille_place.delete("1.0", END)
-            self.braille_place.insert(END, tanslated_braille)
+            self.braille_place.insert(END, transform_braille)
             self.braille_place.config(state="disabled")
         else:
             msgbox.showerror(title="점자 해독 불가", message="점자 해독이 불가능 합니다")
