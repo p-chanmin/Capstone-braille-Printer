@@ -91,7 +91,6 @@ def transfrom_to_braille(braille_text, horizontal = 32):
 
         words_list.append(word)  # horizontal글자 이하인 단어는 그대로 추가
 
-    print(words_list)
     # 최대 길이 horizontal으로 나누기
     lines = []
     line = ''
