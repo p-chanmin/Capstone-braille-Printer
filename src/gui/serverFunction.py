@@ -142,3 +142,16 @@ def delete_print_document(user, tmp_id):
   if response.status_code == 200:
     return True
   return False
+
+def get_braille(user, text):
+  url = f'{ENDPOINT}/api/braille'
+
+  token = user.getToken()
+  headers = {"token": token}
+  data = {"content" : text}
+
+  response = requests.request("GET", url, headers=headers, data=data)
+
+  if response.status_code == 200:
+    return response.json()["result"]
+  return False

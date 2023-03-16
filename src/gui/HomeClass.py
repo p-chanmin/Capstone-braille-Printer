@@ -19,6 +19,8 @@ from src.gui.DocumentPrintModifyClass import DocumentPrintModify
 from src.gui.DocumentPrintDeleteClass import DocumentPrintDelete
 from src.gui.CharThreadClass import CharThread
 from src.gui.UserUIClass import UserUI
+from src.gui.serverFunction import get_braille
+
 
 class Home():
     def __init__(self, user):
@@ -368,8 +370,7 @@ class Home():
     def braille_review(self):
         string = self.text_place.get("1.0", END)
         if (CheckText(string)):
-            tanslated_braille = translate(string)
-            transform_braille = braillePrint.transfrom_to_braille(tanslated_braille, 32)
+            transform_braille = serverFunction.get_braille(self.user, string)
             self.braille_place.config(state="normal")
             self.braille_place.delete("1.0", END)
             self.braille_place.insert(END, transform_braille)
@@ -394,6 +395,6 @@ class Home():
         self.__window.quit()
 
 #####################################################################################
-user = User("aaa","aaa","aaa")
+user = User("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMzLCJpYXQiOjE2Nzg5NTg5Mzh9.46KCsXgQ1sXmpJQlfPNGetuO97NUOW0qDFcHVYwp6e4","aaa","aaa")
 home = Home(user)
 home.start()
