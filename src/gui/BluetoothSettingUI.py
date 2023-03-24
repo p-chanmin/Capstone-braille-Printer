@@ -44,11 +44,12 @@ class BluetoothSettingUI:
                 device_listbox.insert(tk.END, device)
 
         async def search_button_callback():
-            loop = asyncio.get_event_loop()
-            await loop.run_in_executor(None, search_devices)
+            search_button.config(state=tk.DISABLED)
+            await search_devices()
+            search_button.config(state=tk.NORMAL)
 
         # create a button to search to the Bluetooth device
-        search_button = tk.Button(button_frame, text="Search", command=search_button_callback)
+        search_button = tk.Button(button_frame, text="Search", command=lambda: asyncio.run(search_button_callback()))
         search_button.pack(side=tk.LEFT, padx=10)
 
         # create a button to connect to the selected Bluetooth device
