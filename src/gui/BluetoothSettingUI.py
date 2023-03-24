@@ -23,7 +23,7 @@ class BluetoothSettingUI:
                 print(f"{selected_device} - {self.devices[selected_device]}")
 
                 # 연결 완료 시
-                homeclassInstance.printer_text.set(f"print connect : {self.selected_device}")
+                homeclassInstance.printer_text.set(f"print connect : {selected_device}")
             # Add code to connect to selected device here
 
         def on_select(event):
