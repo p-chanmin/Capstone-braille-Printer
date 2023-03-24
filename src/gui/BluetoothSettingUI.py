@@ -1,14 +1,14 @@
 import tkinter as tk
 
 
-class CreateUser:
-    def __init__(self):
-        self.__window = self.__createUI()
+class BluetoothSettingUI:
+    def __init__(self, hoemClassInstance):
+        self.__window = self.__createUI(hoemClassInstance)
 
-    def __createUI(self):
+    def __createUI(self, hoemClassInstance):
         window = tk.Tk()
         window.geometry("400x300")
-        window.title("프린터 블루투스 연결")
+        window.title("Bluetooth Settings")
 
         # create a label for the Bluetooth device selection
         device_label = tk.Label(window, text="Select Bluetooth Device:")
@@ -31,9 +31,17 @@ class CreateUser:
         device_listbox.pack()
         device_listbox.bind('<<ListboxSelect>>', on_select)
 
+        # create a frame to hold the search and connect buttons
+        button_frame = tk.Frame(window)
+        button_frame.pack()
+
+        # create a button to search to the Bluetooth device
+        search_button = tk.Button(button_frame, text="Search")
+        search_button.pack(side=tk.LEFT, padx=10)
+
         # create a button to connect to the selected Bluetooth device
-        connect_button = tk.Button(window, text="연결", command=connect_device)
-        connect_button.pack()
+        connect_button = tk.Button(button_frame, text="Connect", command=connect_device)
+        connect_button.pack(side=tk.LEFT, padx=10)
 
         # create a label for the Bluetooth status
         status_label = tk.Label(window, text="Bluetooth Status: Disconnected")
@@ -47,6 +55,5 @@ class CreateUser:
 
     def __end(self):
         self.__window.destroy()
-        return
 
-CreateUser().start()
+# BluetoothSettingUI().start()

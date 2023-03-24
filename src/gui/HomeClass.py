@@ -6,6 +6,7 @@ import tkinter.ttk as ttk
 from tkinter import filedialog  # 파일 선택 (__all__에 없어서), 파일창
 import tkinter.messagebox as msgbox
 
+from src.gui.BluetoothSettingUI import BluetoothSettingUI
 from src.gui.SpecialCharacterUIClass import SpecialCharacterUI
 from src.braille.braillePrint import CheckText
 from src.braille.translate import translate
@@ -44,12 +45,13 @@ class Home():
         menu.config(background='blue')
 
         menu_1 = Menu(menu, tearoff=0)
+        menu_1.add_command(label="내 정보 더보기", command=self.user_information_function)
         menu_1.add_command(label="인쇄 문서 기록 확인/ 삭제", command=self.print_information_delete_function)
-        menu.add_cascade(label="인쇄 정보", menu=menu_1)
+        menu.add_cascade(label="내 정보", menu=menu_1)
 
         menu_2 = Menu(menu, tearoff=0)
-        menu_2.add_command(label="내 정보 더보기", command=self.user_information_function)
-        menu.add_cascade(label="내 정보", menu=menu_2)
+        menu_2.add_command(label="블루투스 프린터 설정", command=lambda: self.createbluetoothSetting())
+        menu.add_cascade(label="설정", menu=menu_2)
 
         menu_3 = Menu(menu, tearoff=0)
         menu_3.add_command(label="특수문자 도움말", command=lambda: self.createSpecialChacterUI())
@@ -67,6 +69,9 @@ class Home():
         user_email = self.user.getEmail()
         email_label = Label(labelFrame, text="email " + user_email)
         email_label.pack(fill='x', side='right')
+
+        printer_label = Label(labelFrame, text="print connect : None")
+        printer_label.pack(fill='x', side='left')
 
         # Text Fraem {scrollbar, text_place 2개가 들어감}
 
@@ -259,6 +264,10 @@ class Home():
 
     def createSpecialChacterUI(self):
         SpecialCharacterUI(self).start()
+
+    # 블루투스 연결 GUI
+    def createbluetoothSetting(self):
+        BluetoothSettingUI(self).start()
 
     ############################# right button function ###################################
     def check_braille_grammar(self):
