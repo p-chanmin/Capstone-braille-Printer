@@ -1,8 +1,11 @@
 import tkinter as tk
+import asyncio
+from bleak import BleakScanner
 
 
 class BluetoothSettingUI:
     def __init__(self, hoemClassInstance):
+        self.devices = []
         self.__window = self.__createUI(hoemClassInstance)
 
     def __createUI(self, hoemClassInstance):
@@ -24,9 +27,9 @@ class BluetoothSettingUI:
             print(f"Selected device: {selected_device}")
 
         # create a listbox for the Bluetooth devices
-        devices = ["Device 1", "Device 2", "Device 3"]
+        # devices = ["Device 1", "Device 2", "Device 3"]
         device_listbox = tk.Listbox(window)
-        for device in devices:
+        for device in self.devices:
             device_listbox.insert(tk.END, device)
         device_listbox.pack()
         device_listbox.bind('<<ListboxSelect>>', on_select)
@@ -35,8 +38,23 @@ class BluetoothSettingUI:
         button_frame = tk.Frame(window)
         button_frame.pack()
 
+        async def search_devices():
+            print("검색 시작")
+            # 검색 시작 (검색이 종료될때까지 대기)
+            # 기본 검색 시간은 5초
+            devices = await BleakScanner.discover()
+            # 검색된 장치들 리스트 출력
+            device_listbox.delete(0, tk.END)
+            for device in devices:
+                print(device)
+                # device_listbox.insert(tk.END, device)
+
+        async def search_button_callback():
+            loop = asyncio.get_event_loop()
+            loop.call_soon_threadsafe(asyncio.create_task, search_devices())
+
         # create a button to search to the Bluetooth device
-        search_button = tk.Button(button_frame, text="Search")
+        search_button = tk.Button(button_frame, text="Search", command=search_button_callback)
         search_button.pack(side=tk.LEFT, padx=10)
 
         # create a button to connect to the selected Bluetooth device
@@ -55,5 +73,7 @@ class BluetoothSettingUI:
 
     def __end(self):
         self.__window.destroy()
+
+
 
 # BluetoothSettingUI().start()
