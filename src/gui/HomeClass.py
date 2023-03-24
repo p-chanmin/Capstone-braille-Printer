@@ -70,7 +70,9 @@ class Home():
         email_label = Label(labelFrame, text="email " + user_email)
         email_label.pack(fill='x', side='right')
 
-        printer_label = Label(labelFrame, text="print connect : None")
+        self.printer_text = StringVar()
+        self.printer_text.set("print connect : None")
+        printer_label = Label(labelFrame, textvariable=self.printer_text)
         printer_label.pack(fill='x', side='left')
 
         # Text Fraem {scrollbar, text_place 2개가 들어감}

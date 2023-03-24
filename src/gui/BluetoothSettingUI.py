@@ -4,11 +4,11 @@ from bleak import BleakScanner
 
 
 class BluetoothSettingUI:
-    def __init__(self, hoemClassInstance):
-        self.devices = []
-        self.__window = self.__createUI(hoemClassInstance)
+    def __init__(self, homeclassInstance):
+        self.devices = {}
+        self.__window = self.__createUI(homeclassInstance)
 
-    def __createUI(self, hoemClassInstance):
+    def __createUI(self, homeclassInstance):
         window = tk.Tk()
         window.geometry("400x300")
         window.title("Bluetooth Settings")
@@ -19,7 +19,11 @@ class BluetoothSettingUI:
 
         def connect_device():
             selected_device = device_listbox.get(device_listbox.curselection())
-            print(f"Connecting to device: {selected_device}")
+            if(self.devices[selected_device]):
+                print(f"{selected_device} - {self.devices[selected_device]}")
+
+                # 연결 완료 시
+                homeclassInstance.printer_text.set(f"print connect : {self.selected_device}")
             # Add code to connect to selected device here
 
         def on_select(event):
@@ -38,10 +42,13 @@ class BluetoothSettingUI:
         async def search_devices():
             print("Searching for devices...")
             devices = await BleakScanner.discover()
-            print("Devices found:")
+            print("Devices found complete")
+            self.devices = {}
             for device in devices:
-                print(device)
-                device_listbox.insert(tk.END, device)
+                address = str(device)[:17]
+                name = str(device)[19:]
+                self.devices[name] = address
+                device_listbox.insert(tk.END, name)
 
         async def search_button_callback():
             search_button.config(state=tk.DISABLED)
@@ -60,7 +67,6 @@ class BluetoothSettingUI:
         status_label = tk.Label(window, text="Bluetooth Status: Disconnected")
         status_label.pack()
 
-        # run the main loop
         return window
 
     def start(self):
