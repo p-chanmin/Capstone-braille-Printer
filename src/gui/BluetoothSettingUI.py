@@ -5,16 +5,31 @@ from bleak import BleakScanner
 from bleak import BleakClient
 import time
 
+
 class SearchBluetooth(threading.Thread):
-    def __init__(self, search_button):
+    def __init__(self, search_button, device_listbox):
         super().__init__()
         self.search_button = search_button
+        self.device_listbox = device_listbox
+        self.devices = {}
+
+    async def search_devices(self):
+        print("Searching for devices...")
+        devices = await BleakScanner.discover()
+        print("Devices found complete")
+        self.devices = {}
+        self.device_listbox.delete(0, tk.END)
+        for device in devices:
+            address = str(device)[:17]
+            name = str(device)[19:]
+            self.devices[name] = address
+            self.device_listbox.insert(tk.END, name)
 
     def run(self):
-        print("sub thread start ")
-        time.sleep(3)
-        print("sub thread end ")
+        loop = asyncio.new_event_loop()  # 이벤트 루프를 얻음
+        loop.run_until_complete(self.search_devices())
         self.search_button.config(state=tk.NORMAL)
+        loop.close()
 
 class BluetoothSettingUI:
     __instance = None  # Singleton 인스턴스를 저장할 클래스 변수
@@ -26,6 +41,8 @@ class BluetoothSettingUI:
             cls.__instance.client = None
         cls.__instance.__window = cls.__instance.__createUI(homeclassInstance)
         return cls.__instance
+
+
 
     def __createUI(self, homeclassInstance):
         window = tk.Tk()
@@ -70,6 +87,7 @@ class BluetoothSettingUI:
             devices = await BleakScanner.discover()
             print("Devices found complete")
             self.devices = {}
+            device_listbox.delete(0, tk.END)
             for device in devices:
                 address = str(device)[:17]
                 name = str(device)[19:]
@@ -79,7 +97,7 @@ class BluetoothSettingUI:
         async def search_button_callback():
             search_button.config(state=tk.DISABLED)
             # await search_devices()
-            thread = SearchBluetooth(search_button)
+            thread = SearchBluetooth(search_button, device_listbox)
             thread.start()
 
         # create a button to search to the Bluetooth device
