@@ -71,7 +71,7 @@ class Home():
         email_label.pack(fill='x', side='right')
 
         self.printer_text = StringVar()
-        self.printer_text.set("print connect : -")
+        self.printer_text.set("프린터 : 없음")
         printer_label = Label(labelFrame, textvariable=self.printer_text)
         printer_label.pack(fill='x', side='left')
 

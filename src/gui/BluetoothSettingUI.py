@@ -5,30 +5,27 @@ from bleak import BleakScanner
 from bleak import BleakClient
 import time
 
-
 class SearchBluetooth(threading.Thread):
-    def __init__(self, search_button, device_listbox):
+    def __init__(self, bluetooth_ui):
         super().__init__()
-        self.search_button = search_button
-        self.device_listbox = device_listbox
-        self.devices = {}
+        self.bluetooth_ui = bluetooth_ui
 
     async def search_devices(self):
         print("Searching for devices...")
         devices = await BleakScanner.discover()
         print("Devices found complete")
-        self.devices = {}
-        self.device_listbox.delete(0, tk.END)
+        self.bluetooth_ui.devices = {}
+        self.bluetooth_ui.device_listbox.delete(0, tk.END)
         for device in devices:
             address = str(device)[:17]
             name = str(device)[19:]
-            self.devices[name] = address
-            self.device_listbox.insert(tk.END, name)
+            self.bluetooth_ui.devices[name] = address
+            self.bluetooth_ui.device_listbox.insert(tk.END, name)
 
     def run(self):
         loop = asyncio.new_event_loop()  # 이벤트 루프를 얻음
         loop.run_until_complete(self.search_devices())
-        self.search_button.config(state=tk.NORMAL)
+        self.bluetooth_ui.search_button.config(state=tk.NORMAL)
         loop.close()
 
 class BluetoothSettingUI:
@@ -54,7 +51,7 @@ class BluetoothSettingUI:
         device_label.pack()
 
         async def connect_device():
-            selected_device = device_listbox.get(device_listbox.curselection())
+            selected_device = self.device_listbox.get(self.device_listbox.curselection())
             if selected_device in self.devices:
                 print(f"Connecting to {selected_device} - {self.devices[selected_device]}")
                 address = self.devices[selected_device]
@@ -63,46 +60,37 @@ class BluetoothSettingUI:
                     await self.client.connect()
                     print(f"Connected to {selected_device}")
                     # 연결 완료 시
-                    homeclassInstance.printer_text.set(f"print connect : {selected_device}")
+                    homeclassInstance.printer_text.set(f"프린터 : {selected_device}")
+                    self.connect_text.set("블루투스 연결 상태: Connected")
+                    self.printer_text.set(f"프린터 : {selected_device}")
                 except Exception as e:
                     print(f"Failed to connect to {selected_device}: {e}")
+                    self.connect_text.set("블루투스 연결 상태: Disconnected")
             else:
                 print(f"No device selected")
 
         def on_select(event):
-            selected_device = device_listbox.get(device_listbox.curselection())
+            selected_device = self.device_listbox.get(self.device_listbox.curselection())
             print(f"Selected device: {selected_device}")
 
         # create a listbox for the Bluetooth devices
-        device_listbox = tk.Listbox(window)
-        device_listbox.pack()
-        device_listbox.bind('<<ListboxSelect>>', on_select)
+        self.device_listbox = tk.Listbox(window)
+        self.device_listbox.pack()
+        self.device_listbox.bind('<<ListboxSelect>>', on_select)
 
         # create a frame to hold the search and connect buttons
         button_frame = tk.Frame(window)
         button_frame.pack()
 
-        async def search_devices():
-            print("Searching for devices...")
-            devices = await BleakScanner.discover()
-            print("Devices found complete")
-            self.devices = {}
-            device_listbox.delete(0, tk.END)
-            for device in devices:
-                address = str(device)[:17]
-                name = str(device)[19:]
-                self.devices[name] = address
-                device_listbox.insert(tk.END, name)
-
         async def search_button_callback():
-            search_button.config(state=tk.DISABLED)
+            self.search_button.config(state=tk.DISABLED)
             # await search_devices()
-            thread = SearchBluetooth(search_button, device_listbox)
+            thread = SearchBluetooth(self)
             thread.start()
 
         # create a button to search to the Bluetooth device
-        search_button = tk.Button(button_frame, text="Search", command=lambda: asyncio.run(search_button_callback()))
-        search_button.pack(side=tk.LEFT, padx=10)
+        self.search_button = tk.Button(button_frame, text="Search", command=lambda: asyncio.run(search_button_callback()))
+        self.search_button.pack(side=tk.LEFT, padx=10)
 
         # create a button to connect to the selected Bluetooth device
         connect_button = tk.Button(button_frame, text="Connect", command=lambda: asyncio.run(connect_device()))
@@ -110,11 +98,17 @@ class BluetoothSettingUI:
 
         self.connect_text = tk.StringVar(master=window)
         if(self.client is None):
-            self.connect_text.set("Bluetooth Status: Disconnected")
+            self.connect_text.set("블루투스 연결 상태: Disconnected")
         else:
-            self.connect_text.set("Bluetooth Status: connected")
+            self.connect_text.set("블루투스 연결 상태: Connected")
         # create a label for the Bluetooth status
         status_label = tk.Label(window, textvariable=self.connect_text)
+        status_label.pack()
+
+        self.printer_text = tk.StringVar(master=window)
+        self.printer_text.set(homeclassInstance.printer_text.get())
+        # create a label for the Bluetooth status
+        status_label = tk.Label(window, textvariable=self.printer_text)
         status_label.pack()
 
         return window
