@@ -1,8 +1,20 @@
 import tkinter as tk
 import asyncio
+import threading
 from bleak import BleakScanner
 from bleak import BleakClient
+import time
 
+class SearchBluetooth(threading.Thread):
+    def __init__(self, search_button):
+        super().__init__()
+        self.search_button = search_button
+
+    def run(self):
+        print("sub thread start ")
+        time.sleep(3)
+        print("sub thread end ")
+        self.search_button.config(state=tk.NORMAL)
 
 class BluetoothSettingUI:
     __instance = None  # Singleton 인스턴스를 저장할 클래스 변수
@@ -66,8 +78,9 @@ class BluetoothSettingUI:
 
         async def search_button_callback():
             search_button.config(state=tk.DISABLED)
-            await search_devices()
-            search_button.config(state=tk.NORMAL)
+            # await search_devices()
+            thread = SearchBluetooth(search_button)
+            thread.start()
 
         # create a button to search to the Bluetooth device
         search_button = tk.Button(button_frame, text="Search", command=lambda: asyncio.run(search_button_callback()))
