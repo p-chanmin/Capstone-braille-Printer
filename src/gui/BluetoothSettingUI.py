@@ -41,27 +41,32 @@ class ConnectBluetooth(threading.Thread):
     def __init__(self, bluetooth_ui):
         super().__init__()
         self.bluetooth_ui = bluetooth_ui
+        self.bluetooth = Bluetooth()
 
     async def connect_device(self):
-        if(self.bluetooth_ui.client is not None and self.bluetooth_ui.client.is_connected):
+        if(self.bluetooth.client is not None and self.bluetooth.client.is_connected):
             try:
-                print(f"Disonnecting to {self.bluetooth_ui.client}")
-                await self.bluetooth_ui.client.disconnect()
+                print(f"Disonnecting to {self.bluetooth.client}")
+                await self.bluetooth.client.disconnect()
                 print("Disonnecting Complete")
                 self.bluetooth_ui.connect_text.set("블루투스 연결 상태: Disconnected")
                 self.bluetooth_ui.printer_text.set(f"프린터 : 없음")
                 self.bluetooth_ui.connect_button_text.set("Connect")
-                self.bluetooth_ui.client = None
+                self.bluetooth.client = None
             except Exception as e:
-                print(f"Failed to disconnect to {self.bluetooth_ui.client}: {e}")
+                print(f"Failed to disconnect to {self.bluetooth.client}: {e}")
         else:
-            selected_device = self.bluetooth_ui.device_listbox.get(self.bluetooth_ui.device_listbox.curselection())
+            try:
+                selected_device = self.bluetooth_ui.device_listbox.get(self.bluetooth_ui.device_listbox.curselection())
+            except:
+                print("리스트 선택 x")
+                selected_device = ""
             if selected_device in self.bluetooth_ui.devices:
                 print(f"Connecting to {selected_device} - {self.bluetooth_ui.devices[selected_device]}")
                 address = self.bluetooth_ui.devices[selected_device]
                 try:
-                    self.bluetooth_ui.client = BleakClient(address)
-                    await self.bluetooth_ui.client.connect()
+                    self.bluetooth.client = BleakClient(address)
+                    await self.bluetooth.client.connect()
                     print(f"Connected to {selected_device}")
                     # 연결 완료 시
                     self.bluetooth_ui.homeclassInstance.printer_text.set(f"프린터 : {selected_device}")
@@ -69,17 +74,17 @@ class ConnectBluetooth(threading.Thread):
                     self.bluetooth_ui.printer_text.set(f"프린터 : {selected_device}")
                     self.bluetooth_ui.connect_button_text.set("Disconnect")
 
-                    services = await self.bluetooth_ui.client.get_services()
+                    services = await self.bluetooth.client.get_services()
                     # 서비스내에 있는 캐릭터리스틱 정보 보기
                     for service in services:
                         for characteristic in service.characteristics:
                             if ('write' in characteristic.properties):
-                                self.bluetooth_ui.write_uuid = characteristic.uuid
+                                self.bluetooth.write_uuid = characteristic.uuid
                             elif ('notify' in characteristic.properties):
-                                self.bluetooth_ui.notify_uuid = characteristic.uuid
+                                self.bluetooth.notify_uuid = characteristic.uuid
 
-                    print(f"write_uuid : {self.bluetooth_ui.write_uuid}")
-                    print(f"notify_uuid : {self.bluetooth_ui.notify_uuid}")
+                    print(f"write_uuid : {self.bluetooth.write_uuid}")
+                    print(f"notify_uuid : {self.bluetooth.notify_uuid}")
 
                 except Exception as e:
                         print(f"Failed to connect to {selected_device}: {e}")
@@ -91,6 +96,42 @@ class ConnectBluetooth(threading.Thread):
         loop = asyncio.new_event_loop()  # 이벤트 루프를 얻음
         loop.run_until_complete(self.connect_device())
         self.bluetooth_ui.connect_button.config(state=tk.NORMAL)
+class Send_Data(threading.Thread):
+    def __init__(self, data):
+        super().__init__()
+        self.bluetooth = Bluetooth()
+        self.data = data
+
+    async def send_data(self):
+        try:
+            print("데이터 보내는 중...")
+            encoded_data = self.data.encode()
+            print(f"{encoded_data} : {len(encoded_data)}")
+            chunks = [encoded_data[i:i + 65] for i in range(0, len(encoded_data), 65)]
+            for chunk in chunks:
+                result = await self.bluetooth.client.write_gatt_char(self.bluetooth.write_uuid, bytes(chunk))
+                print(f"{len(chunk)}바이트 데이터 보내기 완료... {result}")
+                time.sleep(0.1)
+            print("전체 데이터 전송 완료")
+        except Exception as e:
+            print(f"데이터 전송 중 오류 : {e}")
+
+
+    def run(self):
+        loop = asyncio.new_event_loop()  # 이벤트 루프를 얻음
+        loop.run_until_complete(self.send_data())
+        loop.close()
+
+class Bluetooth:
+    __instance = None  # Singleton 인스턴스를 저장할 클래스 변수
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+            cls.__instance.client = None
+            cls.__instance.write_uuid = ''
+            cls.__instance.notify_uuid = ''
+        return cls.__instance
+
 
 class BluetoothSettingUI:
     __instance = None  # Singleton 인스턴스를 저장할 클래스 변수
@@ -99,10 +140,8 @@ class BluetoothSettingUI:
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
             cls.__instance.devices = {}
-            cls.__instance.client = None
-            cls.__instance.write_uuid = ''
-            cls.__instance.notify_uuid = ''
             cls.__instance.homeclassInstance = homeclassInstance
+            cls.__instance.bluetooth = Bluetooth()
         cls.__instance.__window = cls.__instance.__createUI(homeclassInstance)
         return cls.__instance
 
@@ -143,7 +182,7 @@ class BluetoothSettingUI:
         self.search_button.pack(side=tk.LEFT, padx=10)
 
         self.connect_button_text = tk.StringVar(master=window)
-        if (self.client is not None and self.client.is_connected):
+        if (self.bluetooth.client is not None and self.bluetooth.client.is_connected):
             self.connect_button_text.set("Disconnect")
         else:
             self.connect_button_text.set("Connect")
@@ -152,7 +191,7 @@ class BluetoothSettingUI:
         self.connect_button.pack(side=tk.LEFT, padx=10)
 
         self.connect_text = tk.StringVar(master=window)
-        if(self.client is not None and self.client.is_connected):
+        if(self.bluetooth.client is not None and self.bluetooth.client.is_connected):
             self.connect_text.set("블루투스 연결 상태: Connected")
 
         else:

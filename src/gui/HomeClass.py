@@ -6,9 +6,9 @@ import tkinter.ttk as ttk
 from tkinter import filedialog  # 파일 선택 (__all__에 없어서), 파일창
 import tkinter.messagebox as msgbox
 
-from src.gui.BluetoothSettingUI import BluetoothSettingUI
+from src.gui.BluetoothSettingUI import BluetoothSettingUI, Send_Data, Bluetooth
 from src.gui.SpecialCharacterUIClass import SpecialCharacterUI
-from src.braille.braillePrint import CheckText
+from src.braille.braillePrint import CheckText, transform_to_print
 from src.braille.translate import translate
 from src.braille import braillePrint
 
@@ -391,7 +391,13 @@ class Home():
 
     ############################# arduino function ###################################
     def startPrint(self):
-        pass
+        braille = self.braille_place.get("1.0", END)
+        if braille[-1] == "\n":
+            braille = braille[:-1]
+        data = transform_to_print(braille)
+        bluetooth = Send_Data(data)
+        bluetooth.start()
+        # pass
 
     ############################# process function ###################################
     def start(self):

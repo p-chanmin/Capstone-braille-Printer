@@ -157,19 +157,21 @@ def transform_to_print(braille_text):
         for c in line:
             # 점자를 문자열 데이터로 변경
             str_data = braille_to_data(c)
-            lst = [[int(str_data[i]), int(str_data[i + 3])] for i in range(3)]
+            lst = [[str_data[i], str_data[i + 3]] for i in range(3)]
             # 데이터를 넘파이 배열로 저장
             data = np.array(lst)
             line_form.append(data)
 
+        # print(line_form)
         # 한 줄의 점자 데이터들을 3줄의 점 데이터로 변형
         dot_data = np.concatenate(line_form, axis=1)
         for d in dot_data:
-            # 데이터를 역순으로 하여 인쇄 시 찍어야하는 위치로 변형
             # 최종 결과 폼에 저장
-            result_form.append(d[::-1])
+            result_form.append("".join(d))
 
-    return result_form
+    return "\n".join(result_form)
+
+# print(transform_to_print("⠴⠭⠵⠉⠃⠁⠙⠓⠲⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"))
 
 def get_page(braille_text, vertical = 26):
     line = len(braille_text.split("\n"))
