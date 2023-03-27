@@ -90,21 +90,14 @@ class BluetoothSettingUI:
         connect_button = tk.Button(button_frame, text="Connect", command=lambda: asyncio.run(connect_device()))
         connect_button.pack(side=tk.LEFT, padx=10)
 
-        connect_text = "default"
+        self.connect_text = tk.StringVar(master=window)
         if(self.client is None):
-            print("None")
-            connect_text = "Bluetooth Status: Disconnected"
+            self.connect_text.set("Bluetooth Status: Disconnected")
         else:
-            print("not None")
-            connect_text = "Bluetooth Status: connected"
+            self.connect_text.set("Bluetooth Status: connected")
         # create a label for the Bluetooth status
-        status_label = tk.Label(window, text=connect_text)
+        status_label = tk.Label(window, textvariable=self.connect_text)
         status_label.pack()
-
-        self.printer_text = tk.StringVar()
-        self.printer_text.set("print connect : -")
-        printer_label = tk.Label(window, textvariable=self.printer_text)
-        printer_label.pack()
 
         return window
 
