@@ -391,6 +391,9 @@ class Home():
 
     ############################# arduino function ###################################
     def startPrint(self):
+        if(Bluetooth().client is None):
+            print("연결된 프린터가 없습니다.")
+            return
         braille = self.braille_place.get("1.0", END)
         if braille[-1] == "\n":
             braille = braille[:-1]

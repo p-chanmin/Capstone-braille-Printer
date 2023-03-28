@@ -43,16 +43,14 @@ class ConnectBluetooth(threading.Thread):
         self.bluetooth_ui = bluetooth_ui
         self.bluetooth = Bluetooth()
 
+    async def notify_callback(self, sender, data):
+        print("Received notification : ", data.decode())
+
     async def connect_device(self):
         if(self.bluetooth.client is not None and self.bluetooth.client.is_connected):
             try:
                 print(f"Disonnecting to {self.bluetooth.client}")
                 await self.bluetooth.client.disconnect()
-                print("Disonnecting Complete")
-                self.bluetooth_ui.connect_text.set("블루투스 연결 상태: Disconnected")
-                self.bluetooth_ui.printer_text.set(f"프린터 : 없음")
-                self.bluetooth_ui.connect_button_text.set("Connect")
-                self.bluetooth.client = None
             except Exception as e:
                 print(f"Failed to disconnect to {self.bluetooth.client}: {e}")
         else:
@@ -65,7 +63,7 @@ class ConnectBluetooth(threading.Thread):
                 print(f"Connecting to {selected_device} - {self.bluetooth_ui.devices[selected_device]}")
                 address = self.bluetooth_ui.devices[selected_device]
                 try:
-                    self.bluetooth.client = BleakClient(address)
+                    self.bluetooth.client = BleakClient(address, passkey="1234")
                     await self.bluetooth.client.connect()
                     print(f"Connected to {selected_device}")
                     # 연결 완료 시
@@ -73,6 +71,7 @@ class ConnectBluetooth(threading.Thread):
                     self.bluetooth_ui.connect_text.set("블루투스 연결 상태: Connected")
                     self.bluetooth_ui.printer_text.set(f"프린터 : {selected_device}")
                     self.bluetooth_ui.connect_button_text.set("Disconnect")
+                    self.bluetooth_ui.connect_button.config(state=tk.NORMAL)
 
                     services = await self.bluetooth.client.get_services()
                     # 서비스내에 있는 캐릭터리스틱 정보 보기
@@ -86,8 +85,25 @@ class ConnectBluetooth(threading.Thread):
                     print(f"write_uuid : {self.bluetooth.write_uuid}")
                     print(f"notify_uuid : {self.bluetooth.notify_uuid}")
 
+                    # notify 수신
+                    await self.bluetooth.client.start_notify(self.bluetooth.notify_uuid, self.notify_callback)
+                    while self.bluetooth.client.is_connected:
+                        await asyncio.sleep(1)
+
+                    # notify 관찰이 종료되고 Disconnect 상황 표시
+                    if not self.bluetooth.client.is_connected:
+                        print("connect_device_notify await 종료")
+                        print("Disonnecting Complete")
+                        self.bluetooth_ui.connect_text.set("블루투스 연결 상태: Disconnected")
+                        self.bluetooth_ui.printer_text.set(f"프린터 : 없음")
+                        self.bluetooth_ui.homeclassInstance.printer_text.set(f"프린터 : 없음")
+                        self.bluetooth_ui.connect_button_text.set("Connect")
+                        self.bluetooth.client = None
+                        self.bluetooth_ui.connect_button.config(state=tk.NORMAL)
+
                 except Exception as e:
                         print(f"Failed to connect to {selected_device}: {e}")
+                        self.bluetooth_ui.connect_button.config(state=tk.NORMAL)
                         messagebox.showwarning("Error", f"{selected_device} : 디바이스 연결에 실패했습니다.\n재시도 해주세요.")
                         self.bluetooth_ui.connect_text.set("블루투스 연결 상태: Disconnected")
             else:
@@ -95,7 +111,6 @@ class ConnectBluetooth(threading.Thread):
     def run(self):
         loop = asyncio.new_event_loop()  # 이벤트 루프를 얻음
         loop.run_until_complete(self.connect_device())
-        self.bluetooth_ui.connect_button.config(state=tk.NORMAL)
 class Send_Data(threading.Thread):
     def __init__(self, data):
         super().__init__()
