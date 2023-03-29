@@ -6,8 +6,9 @@ import tkinter.ttk as ttk
 from tkinter import filedialog  # 파일 선택 (__all__에 없어서), 파일창
 import tkinter.messagebox as msgbox
 
+from src.gui.BluetoothSettingUI import BluetoothSettingUI, Send_Data, Bluetooth
 from src.gui.SpecialCharacterUIClass import SpecialCharacterUI
-from src.braille.braillePrint import CheckText
+from src.braille.braillePrint import CheckText, transform_to_print
 from src.braille.translate import translate
 from src.braille import braillePrint
 
@@ -44,12 +45,13 @@ class Home():
         menu.config(background='blue')
 
         menu_1 = Menu(menu, tearoff=0)
+        menu_1.add_command(label="내 정보 더보기", command=self.user_information_function)
         menu_1.add_command(label="인쇄 문서 기록 확인/ 삭제", command=self.print_information_delete_function)
-        menu.add_cascade(label="인쇄 정보", menu=menu_1)
+        menu.add_cascade(label="내 정보", menu=menu_1)
 
         menu_2 = Menu(menu, tearoff=0)
-        menu_2.add_command(label="내 정보 더보기", command=self.user_information_function)
-        menu.add_cascade(label="내 정보", menu=menu_2)
+        menu_2.add_command(label="블루투스 프린터 설정", command=lambda: self.createbluetoothSetting())
+        menu.add_cascade(label="설정", menu=menu_2)
 
         menu_3 = Menu(menu, tearoff=0)
         menu_3.add_command(label="특수문자 도움말", command=lambda: self.createSpecialChacterUI())
@@ -67,6 +69,11 @@ class Home():
         user_email = self.user.getEmail()
         email_label = Label(labelFrame, text="email " + user_email)
         email_label.pack(fill='x', side='right')
+
+        self.printer_text = StringVar()
+        self.printer_text.set("프린터 : 없음")
+        printer_label = Label(labelFrame, textvariable=self.printer_text)
+        printer_label.pack(fill='x', side='left')
 
         # Text Fraem {scrollbar, text_place 2개가 들어감}
 
@@ -260,6 +267,10 @@ class Home():
     def createSpecialChacterUI(self):
         SpecialCharacterUI(self).start()
 
+    # 블루투스 연결 GUI
+    def createbluetoothSetting(self):
+        BluetoothSettingUI(self).start()
+
     ############################# right button function ###################################
     def check_braille_grammar(self):
         string = self.text_place.get("1.0", END)
@@ -380,7 +391,16 @@ class Home():
 
     ############################# arduino function ###################################
     def startPrint(self):
-        pass
+        if(Bluetooth().client is None):
+            print("연결된 프린터가 없습니다.")
+            return
+        braille = self.braille_place.get("1.0", END)
+        if braille[-1] == "\n":
+            braille = braille[:-1]
+        data = transform_to_print(braille)
+        bluetooth = Send_Data(data)
+        bluetooth.start()
+        # pass
 
     ############################# process function ###################################
     def start(self):
