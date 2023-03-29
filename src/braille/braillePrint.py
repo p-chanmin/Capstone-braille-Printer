@@ -77,68 +77,24 @@ def transfrom_to_braille(braille_text, horizontal = 32):
         :param horizontal: 최대 가로칸
         :return: 최대 가로칸으로 줄바꿈(\n)한 점자 문자열
     """
-    # 문자열처리를 위해 점자 공백을 일반 공백으로 변경
-    braille_text = braille_text.replace("⠀", " ")
+    # 문자열처리를 위해 양쪽 끝의 줄바꿈 표를 없애고, 점자 공백을 일반 공백으로 변경
+    braille_text = braille_text.strip('\n').replace("⠀", " ")
 
     words = braille_text.split(" ")  # 공백으로 단어로 나눔
-    words_list = []  # 결과를 저장할 리스트
+    form = ""  # 결과를 저장할 리스트
 
-    # 가로길이에 맞게 단어 분할
-    for word in words:
-        while len(word) > horizontal:  # 단어가 horizontal글자보다 길 경우
-            words_list.append(word[:horizontal])  # horizontal글자까지 자른 후 추가
-            word = word[horizontal:]  # 나머지 단어로 다시 반복
-
-        words_list.append(word)  # horizontal글자 이하인 단어는 그대로 추가
-
-    # 최대 길이 horizontal으로 나누기
-    lines = []
-    line = ''
-    # 단어 목록을 순회하면서 줄바꿈
-    for word in words_list:
-        # 단어를 추가했을 때 가로보다 길면 라인을 추가하고, 새로운 라인 생성
-        if len(line) + len(word) + 1 > horizontal:
-            lines.append(line)
-            line = ""
-        # 단어 중간에 줄바꿈 표가 있을 경우 줄바꿈을 우선으로 라인 생성
-        if "\n" in word:
-            split_words = word.split("\n")
-            for i, split_word in enumerate(split_words):
-                if len(line) + len(split_word) + 1 > horizontal:
-                    lines.append(line)
-                    line = ""
-                else:
-                    if line:
-                        line += " "
-                    line += split_word
-        # 그렇지 않으면 공백으로 단어 추가
+    cnt = 0
+    for c in braille_text:
+        if cnt == horizontal:
+            form += '\n'
+            cnt = 0
+        form += c
+        if c == '\n':
+            cnt = 0
         else:
-            if line:
-                line += " "
-            line += word
+            cnt += 1
 
-    # 마지막 라인이 있으면 추가
-    if line:
-        lines.append(line)
-
-    # 모든 줄을 넘파이 배열로 변환
-    chunks = np.array(lines)
-
-    # 패딩할 점자 공백("⠀")
-    pad_char = "⠀"
-
-    # 각 문자열에 대해 패딩을 적용하여 가로칸을 맞춤
-    padded_array = []
-    for s in chunks:
-        if len(s) < horizontal:
-            pad_length = horizontal - len(s)
-            padded_string = s + pad_char * pad_length
-        else:
-            padded_string = s
-        # 문자열에서 공백을 데이터화 가능한 점자 공백("⠀")으로 변경
-        padded_array.append(padded_string.replace(" ", "⠀"))
-
-    return "\n".join(padded_array)
+    return form
 
 def transform_to_print(braille_text):
     """
@@ -177,16 +133,17 @@ def get_page(braille_text, vertical = 26):
     line = len(braille_text.split("\n"))
     return line//vertical if(line%vertical == 0) else line//vertical + 1
 
-# test_text = "3D 프린터―3차원 설계도를 보고 입체적인 물건을 인쇄하는 프린터\n3차원 프린터는 어떤 원리로 물건을 인쇄할까? 3차원 프린터는 입체적으로 그려진 물건을 마치 미분하듯이 가로로 1만 개 이상 잘게 잘라 분석한다. 그리고 아주 얇은 막(레이어)을 한 층씩 쌓아 물건의 바닥부터 꼭대기까지 완성한다. 잉크젯 프린터가 빨강, 파랑, 노랑 세 가지 잉크를 조합해 다양한 색상을 만드는 것처럼 3차원 프린터는 설계에 따라 레이어의 위치를 조절해 쌓아 올린다. 지금까지 개발된 3차원 프린터는 1시간당 높이 2.8cm를 쌓아 올린다. 레이어의 두께는 약 0.01~0.08mm로 종이 한 장보다도 얇다. 쾌속 조형 방식으로 인쇄한 물건은 맨 눈에는 곡선처럼 보이는 부분도 현미경으로 보면 계단처럼 들쭉날쭉하다. 그래서 레이어가 얇으면 얇을수록 물건이 더 정교해진다."
-# str = translate(test_text)
+# test_text = "asdgaaaaaaaaaaaaaaaaaaaaaaasdffffffff"
+# # str = translate(test_text)
+# str =  ""
 # print(str)
 # result_str = transfrom_to_braille(str, 32)
-# result_data = transform_to_print(result_str)
+# # result_data = transform_to_print(result_str)
 #
 # print(f"({result_str})")
 # print()
-# for i in result_data:
-#     print(f"{len(i)} : {i}")
-# print(get_page(result_str))
+# # for i in result_data:
+# #     print(f"{len(i)} : {i}")
+# # print(get_page(result_str))
 
 

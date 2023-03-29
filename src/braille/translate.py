@@ -96,6 +96,6 @@ def translate(text: str):
 
     return "".join(translated_text)
 
-# test = ""
+# test = "asdgaaaaaaaaaaaaaaaaaaaaaaasdffffffff"
 #
 # print(translate(test))
