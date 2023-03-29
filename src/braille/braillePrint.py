@@ -94,7 +94,7 @@ def transfrom_to_braille(braille_text, horizontal = 32):
         else:
             cnt += 1
 
-    return form
+    return form.strip('\n').replace(" ", "⠀")
 
 def transform_to_print(braille_text):
     """
