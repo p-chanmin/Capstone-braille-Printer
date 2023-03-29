@@ -59,18 +59,19 @@ class ConnectBluetooth(threading.Thread):
             except:
                 print("리스트 선택 x")
                 selected_device = ""
+                self.bluetooth_ui.connect_button.config(state=tk.NORMAL)
             if selected_device in self.bluetooth_ui.devices:
                 print(f"Connecting to {selected_device} - {self.bluetooth_ui.devices[selected_device]}")
                 address = self.bluetooth_ui.devices[selected_device]
                 try:
-                    self.bluetooth.client = BleakClient(address, passkey="1234")
+                    self.bluetooth.client = BleakClient(address, passkey=self.bluetooth_ui.password_entry.get())
                     await self.bluetooth.client.connect()
                     print(f"Connected to {selected_device}")
                     # 연결 완료 시
                     self.bluetooth_ui.homeclassInstance.printer_text.set(f"프린터 : {selected_device}")
-                    self.bluetooth_ui.connect_text.set("블루투스 연결 상태: Connected")
+                    self.bluetooth_ui.connect_text.set("블루투스 연결 상태: 연결됨")
                     self.bluetooth_ui.printer_text.set(f"프린터 : {selected_device}")
-                    self.bluetooth_ui.connect_button_text.set("Disconnect")
+                    self.bluetooth_ui.connect_button_text.set("연결 해제")
                     self.bluetooth_ui.connect_button.config(state=tk.NORMAL)
 
                     services = await self.bluetooth.client.get_services()
@@ -94,18 +95,18 @@ class ConnectBluetooth(threading.Thread):
                     if not self.bluetooth.client.is_connected:
                         print("connect_device_notify await 종료")
                         print("Disonnecting Complete")
-                        self.bluetooth_ui.connect_text.set("블루투스 연결 상태: Disconnected")
+                        self.bluetooth_ui.connect_text.set("블루투스 연결 상태: 연결 없음")
                         self.bluetooth_ui.printer_text.set(f"프린터 : 없음")
                         self.bluetooth_ui.homeclassInstance.printer_text.set(f"프린터 : 없음")
-                        self.bluetooth_ui.connect_button_text.set("Connect")
+                        self.bluetooth_ui.connect_button_text.set("연결")
                         self.bluetooth.client = None
                         self.bluetooth_ui.connect_button.config(state=tk.NORMAL)
 
                 except Exception as e:
                         print(f"Failed to connect to {selected_device}: {e}")
                         self.bluetooth_ui.connect_button.config(state=tk.NORMAL)
-                        messagebox.showwarning("Error", f"{selected_device} : 디바이스 연결에 실패했습니다.\n재시도 해주세요.")
-                        self.bluetooth_ui.connect_text.set("블루투스 연결 상태: Disconnected")
+                        messagebox.showwarning("Error", f"{selected_device} : 디바이스 연결에 실패했습니다.\n 재시도 해주세요.")
+                        self.bluetooth_ui.connect_text.set("블루투스 연결 상태: 연결 없음")
             else:
                 print(f"No device selected")
     def run(self):
@@ -163,22 +164,28 @@ class BluetoothSettingUI:
     def __createUI(self, homeclassInstance):
         window = tk.Tk()
         window.geometry("400x300")
-        window.title("Bluetooth Settings")
+        window.title("블루투스 프린터 설정")
 
-        # create a label for the Bluetooth device selection
-        device_label = tk.Label(window, text="Select Bluetooth Device:")
+        device_label = tk.Label(window, text="검색된 블루투스 기기:")
         device_label.pack()
 
         def on_select(event):
             selected_device = self.device_listbox.get(self.device_listbox.curselection())
             print(f"Selected device: {selected_device}")
 
-        # create a listbox for the Bluetooth devices
         self.device_listbox = tk.Listbox(window)
         self.device_listbox.pack()
         self.device_listbox.bind('<<ListboxSelect>>', on_select)
 
-        # create a frame to hold the search and connect buttons
+        password_frame = tk.Frame(window)
+        password_frame.pack(padx=10, pady=10)
+
+        password_label = tk.Label(password_frame, text="비밀번호:")
+        password_label.pack(side=tk.LEFT)
+
+        self.password_entry = tk.Entry(password_frame, show="*", width=10)
+        self.password_entry.pack(side=tk.LEFT, padx=5)
+
         button_frame = tk.Frame(window)
         button_frame.pack()
 
@@ -192,33 +199,32 @@ class BluetoothSettingUI:
             thread = ConnectBluetooth(self)
             thread.start()
 
-        # create a button to search to the Bluetooth device
-        self.search_button = tk.Button(button_frame, text="Search", command=search_button_callback)
+        self.search_button = tk.Button(button_frame, text="검색", command=search_button_callback)
         self.search_button.pack(side=tk.LEFT, padx=10)
 
         self.connect_button_text = tk.StringVar(master=window)
         if (self.bluetooth.client is not None and self.bluetooth.client.is_connected):
-            self.connect_button_text.set("Disconnect")
+            self.connect_button_text.set("연결 해제")
         else:
-            self.connect_button_text.set("Connect")
-        # create a button to connect to the selected Bluetooth device
+            self.connect_button_text.set("연결")
+
         self.connect_button = tk.Button(button_frame, textvariable=self.connect_button_text, command=connect_button_callback)
         self.connect_button.pack(side=tk.LEFT, padx=10)
 
         self.connect_text = tk.StringVar(master=window)
         if(self.bluetooth.client is not None and self.bluetooth.client.is_connected):
-            self.connect_text.set("블루투스 연결 상태: Connected")
+            self.connect_text.set("블루투스 연결 상태: 연결됨")
 
         else:
-            self.connect_text.set("블루투스 연결 상태: Disconnected")
+            self.connect_text.set("블루투스 연결 상태: 연결 없음")
             self.homeclassInstance.printer_text.set(f"프린터 : 없음")
-        # create a label for the Bluetooth status
+
         status_label = tk.Label(window, textvariable=self.connect_text)
         status_label.pack()
 
         self.printer_text = tk.StringVar(master=window)
         self.printer_text.set(homeclassInstance.printer_text.get())
-        # create a label for the Bluetooth status
+
         status_label = tk.Label(window, textvariable=self.printer_text)
         status_label.pack()
 
