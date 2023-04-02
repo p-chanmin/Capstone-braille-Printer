@@ -41,6 +41,7 @@ class ConnectBluetooth(threading.Thread):
                 cls.__instance.home_ui = home_ui
             cls.__instance.isPrinting = False
             cls.__instance.line = 0
+            cls.__instance.current_line = 0
         return cls.__instance
 
     def __init__(self, bluetooth_ui, home_ui):
@@ -52,22 +53,28 @@ class ConnectBluetooth(threading.Thread):
         self.bluetooth = Bluetooth()
         self.isPrinting = False
         self.line = 0
+        self.current_line = 0
 
     async def notify_callback(self, sender, data):
         print(f"Received notification :{data.decode()}")
         if("Send_Data" == data.decode()):
             print("Send_Data notify 수신, 데이터 전송")
-            self.isPrinting = False
+            if(self.current_line % 78 == 0):
+                messagebox.showinfo("용지 교체", "용지 교체를 해주세요.\n용지를 교체하면 확인을 눌러주세요.")
+                self.isPrinting = False
+            else:
+                self.isPrinting = False
         if("Complete_Print" == data.decode()):
             self.home_ui.print_button.config(state=tk.NORMAL)
             messagebox.showinfo("인쇄 완료", "인쇄가 완료되었습니다.")
             self.line = 0
+            self.current_line = 0
             self.home_ui.p_var.set(0)
             self.home_ui.progress_bar.update()
             print("Complete_Print...")
         if("Line" == data.decode()[:4]):
-            l = int(data.decode()[4:])
-            self.home_ui.p_var.set(l/self.line*100)
+            self.current_line = int(data.decode()[4:])
+            self.home_ui.p_var.set(self.current_line/self.line*100)
             self.home_ui.progress_bar.update()
 
 
