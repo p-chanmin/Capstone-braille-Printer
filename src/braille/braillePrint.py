@@ -117,15 +117,16 @@ def transform_to_print(braille_text):
             # 데이터를 넘파이 배열로 저장
             data = np.array(lst)
             line_form.append(data)
+        if (len(line_form) == 0):
+            line_form.append(np.array([['0','0'],['0','0'],['0','0']]))
 
-        # print(line_form)
         # 한 줄의 점자 데이터들을 3줄의 점 데이터로 변형
         dot_data = np.concatenate(line_form, axis=1)
         for d in dot_data:
             # 최종 결과 폼에 저장
             result_form.append("".join(d))
 
-    return "\n".join(result_form)
+    return "+".join(result_form)
 
 # print(transform_to_print("⠴⠭⠵⠉⠃⠁⠙⠓⠲⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"))
 
