@@ -6,7 +6,7 @@ import tkinter.ttk as ttk
 from tkinter import filedialog  # 파일 선택 (__all__에 없어서), 파일창
 import tkinter.messagebox as msgbox
 
-from src.gui.BluetoothSettingUI import BluetoothSettingUI, Send_Data, Bluetooth
+from src.gui.BluetoothSettingUI import BluetoothSettingUI, Send_Data, Bluetooth, ConnectBluetooth
 from src.gui.SpecialCharacterUIClass import SpecialCharacterUI
 from src.braille.braillePrint import CheckText, transform_to_print, get_line_page
 from src.braille.translate import translate
@@ -25,6 +25,7 @@ from src.gui.serverFunction import get_braille, submit_print_document
 
 class Home():
     def __init__(self, user):
+        ConnectBluetooth(None, self)
         self.user = user
         self.__window = self.__createUI()
 
@@ -168,11 +169,11 @@ class Home():
         # -------------- Print  Frame --------------
         prit_Frmae = Frame(root)
         prit_Frmae.pack(fill='x', padx=5, pady=5)
-        print_button = Button(prit_Frmae, width=13, height=1, text="프린트 시작", command=self.startPrint)
+        self.print_button = Button(prit_Frmae, width=13, height=1, text="프린트 시작", command=self.startPrint)
         exit_button = Button(prit_Frmae, width=13, height=1, text="닫기", command=lambda: root.quit())
 
         exit_button.pack(side='right', padx=3)
-        print_button.pack(side='right', padx=3)
+        self.print_button.pack(side='right', padx=3)
         return root
 
     ############################# menu function ###################################
@@ -410,6 +411,7 @@ class Home():
 
         bluetooth = Send_Data(print_id, data)
         bluetooth.start()
+        self.print_button.config(state=DISABLED)
         pass
 
     ############################# process function ###################################

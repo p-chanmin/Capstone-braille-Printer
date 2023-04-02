@@ -32,16 +32,22 @@ class SearchBluetooth(threading.Thread):
 class ConnectBluetooth(threading.Thread):
     __instance = None  # Singleton 인스턴스를 저장할 클래스 변수
 
-    def __new__(cls, bluetooth_ui):
+    def __new__(cls, bluetooth_ui, home_ui):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
-            cls.__instance.bluetooth_ui = bluetooth_ui
+            if (bluetooth_ui is not None):
+                cls.__instance.bluetooth_ui = bluetooth_ui
+            if (home_ui is not None):
+                cls.__instance.home_ui = home_ui
             cls.__instance.isPrinting = False
         return cls.__instance
 
-    def __init__(self, bluetooth_ui):
+    def __init__(self, bluetooth_ui, home_ui):
         super().__init__()
-        self.bluetooth_ui = bluetooth_ui
+        if (bluetooth_ui is not None):
+            self.bluetooth_ui = bluetooth_ui
+        if (home_ui is not None):
+            self.home_ui = home_ui
         self.bluetooth = Bluetooth()
         self.isPrinting = False
 
@@ -50,6 +56,10 @@ class ConnectBluetooth(threading.Thread):
         if("Send_Data" == data.decode()):
             print("Send_Data notify 수신, 데이터 전송")
             self.isPrinting = False
+        if("Complete_Print" == data.decode()):
+            self.home_ui.print_button.config(state=tk.NORMAL)
+            print("Complete_Print...")
+
 
     async def connect_device(self):
         if(self.bluetooth.client is not None and self.bluetooth.client.is_connected):
@@ -126,7 +136,7 @@ class Send_Data(threading.Thread):
 
     async def send_data(self):
         try:
-            connect = ConnectBluetooth(None)
+            connect = ConnectBluetooth(None, None)
             print("데이터 보내는 중...")
 
             data_list = self.data.split('+')
@@ -225,7 +235,7 @@ class BluetoothSettingUI:
 
         def connect_button_callback():
             self.connect_button.config(state=tk.DISABLED)
-            thread = ConnectBluetooth(self)
+            thread = ConnectBluetooth(self, None)
             thread.start()
 
         self.search_button = tk.Button(button_frame, text="검색", command=search_button_callback)
