@@ -40,6 +40,7 @@ class ConnectBluetooth(threading.Thread):
             if (home_ui is not None):
                 cls.__instance.home_ui = home_ui
             cls.__instance.isPrinting = False
+            cls.__instance.line = 0
         return cls.__instance
 
     def __init__(self, bluetooth_ui, home_ui):
@@ -50,6 +51,7 @@ class ConnectBluetooth(threading.Thread):
             self.home_ui = home_ui
         self.bluetooth = Bluetooth()
         self.isPrinting = False
+        self.line = 0
 
     async def notify_callback(self, sender, data):
         print(f"Received notification :{data.decode()}")
@@ -59,7 +61,14 @@ class ConnectBluetooth(threading.Thread):
         if("Complete_Print" == data.decode()):
             self.home_ui.print_button.config(state=tk.NORMAL)
             messagebox.showinfo("인쇄 완료", "인쇄가 완료되었습니다.")
+            self.line = 0
+            self.home_ui.p_var.set(0)
+            self.home_ui.progress_bar.update()
             print("Complete_Print...")
+        if("Line" == data.decode()[:4]):
+            l = int(data.decode()[4:])
+            self.home_ui.p_var.set(l/self.line*100)
+            self.home_ui.progress_bar.update()
 
 
     async def connect_device(self):
@@ -141,6 +150,7 @@ class Send_Data(threading.Thread):
             print("데이터 보내는 중...")
 
             data_list = self.data.split('+')
+            connect.line = len(data_list)
             send_data_list = []
             for i in range(0, len(data_list), 3):
                 data = data_list[i] + '+' + data_list[i + 1] + '+' + data_list[i + 2]
@@ -148,7 +158,6 @@ class Send_Data(threading.Thread):
 
             send = ("P|" + str(self.print_id) + "|" + str(len("".join(send_data_list)))).encode()
             connect.isPrinting = True
-            print("코드 보냄")
             await self.bluetooth.client.write_gatt_char(self.bluetooth.write_uuid, bytes(send))
 
             print("noti 대기중...")

@@ -162,9 +162,9 @@ class Home():
         frame_progress = LabelFrame(root, text='진행상황')
         frame_progress.pack(fill='x', padx=5, pady=5)
 
-        p_var = DoubleVar()
-        progress_bar = ttk.Progressbar(frame_progress, maximum=100, variable=p_var)
-        progress_bar.pack(fill='x', padx=5, pady=5)
+        self.p_var = DoubleVar()
+        self.progress_bar = ttk.Progressbar(frame_progress, maximum=100, variable=self.p_var)
+        self.progress_bar.pack(fill='x', padx=5, pady=5)
 
         # -------------- Print  Frame --------------
         prit_Frmae = Frame(root)
