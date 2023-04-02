@@ -36,15 +36,20 @@ class ConnectBluetooth(threading.Thread):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
             cls.__instance.bluetooth_ui = bluetooth_ui
+            cls.__instance.isPrinting = False
         return cls.__instance
 
     def __init__(self, bluetooth_ui):
         super().__init__()
         self.bluetooth_ui = bluetooth_ui
         self.bluetooth = Bluetooth()
+        self.isPrinting = False
 
     async def notify_callback(self, sender, data):
         print(f"Received notification :{data.decode()}")
+        if("Send_Data" == data.decode()):
+            print("Send_Data notify 수신, 데이터 전송")
+            self.isPrinting = False
 
     async def connect_device(self):
         if(self.bluetooth.client is not None and self.bluetooth.client.is_connected):
@@ -121,15 +126,36 @@ class Send_Data(threading.Thread):
 
     async def send_data(self):
         try:
+            connect = ConnectBluetooth(None)
             print("데이터 보내는 중...")
-            send = "P|" + str(self.print_id) + "|" + self.data
-            encoded_data = send.encode()
-            print(f"{encoded_data} : {len(encoded_data)}")
-            chunks = [encoded_data[i:i + 65] for i in range(0, len(encoded_data), 65)]
-            for chunk in chunks:
-                result = await self.bluetooth.client.write_gatt_char(self.bluetooth.write_uuid, bytes(chunk))
-                print(f"{len(chunk)}바이트 데이터 보내기 완료... {result}")
-                time.sleep(0.1)
+
+            data_list = self.data.split('+')
+            send_data_list = []
+            for i in range(0, len(data_list), 3):
+                data = data_list[i] + '+' + data_list[i + 1] + '+' + data_list[i + 2]
+                send_data_list.append(data)
+
+            send = ("P|" + str(self.print_id) + "|" + str(len("".join(send_data_list)))).encode()
+            connect.isPrinting = True
+            print("코드 보냄")
+            await self.bluetooth.client.write_gatt_char(self.bluetooth.write_uuid, bytes(send))
+
+            print("noti 대기중...")
+            while(connect.isPrinting):
+                pass
+
+            for data in send_data_list:
+                encoded_data = data.encode()
+                chunks = [encoded_data[i:i + 65] for i in range(0, len(encoded_data), 65)]
+                for chunk in chunks:
+                    result = await self.bluetooth.client.write_gatt_char(self.bluetooth.write_uuid, bytes(chunk))
+                    print(f"{len(chunk)}바이트 데이터 보내기 완료... {result}")
+                    time.sleep(0.1)
+                print("전체 데이터 전송 완료")
+                connect.isPrinting = True
+                while (connect.isPrinting):
+                    pass
+
             print("전체 데이터 전송 완료")
         except Exception as e:
             print(f"데이터 전송 중 오류 : {e}")
