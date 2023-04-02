@@ -58,6 +58,7 @@ class ConnectBluetooth(threading.Thread):
             self.isPrinting = False
         if("Complete_Print" == data.decode()):
             self.home_ui.print_button.config(state=tk.NORMAL)
+            messagebox.showinfo("인쇄 완료", "인쇄가 완료되었습니다.")
             print("Complete_Print...")
 
 
