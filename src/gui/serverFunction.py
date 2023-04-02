@@ -80,19 +80,21 @@ def user_delete(user):
 def isDelteUser(email, password):
   return True
 
-def submit_print_document(user, tmp_title, tmp_page):
+def submit_print_document(user, tmp_title, tmp_content, tmp_page):
   url = f'{ENDPOINT}/api/print'
 
   token = user.getToken()
   headers = {"token":token}
 
-  title= tmp_title
+  title = tmp_title
+  content = tmp_content
   page = tmp_page
 
-  data={"title":title, "page":page}
+  data={"title":title, "content":content, "page":page}
   response = requests.request("POST", url, headers=headers, data=data)
 
   if response.status_code == 200:
+    print(response.json()['insertId'])
     return True
 
   return False
