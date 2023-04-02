@@ -94,8 +94,7 @@ def submit_print_document(user, tmp_title, tmp_content, tmp_page):
   response = requests.request("POST", url, headers=headers, data=data)
 
   if response.status_code == 200:
-    print(response.json()['insertId'])
-    return True
+    return response.json()['insertId']
 
   return False
 
