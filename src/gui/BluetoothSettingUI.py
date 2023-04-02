@@ -44,7 +44,7 @@ class ConnectBluetooth(threading.Thread):
         self.bluetooth = Bluetooth()
 
     async def notify_callback(self, sender, data):
-        print("Received notification : ", data.decode())
+        print(f"Received notification :{data.decode()}")
 
     async def connect_device(self):
         if(self.bluetooth.client is not None and self.bluetooth.client.is_connected):
@@ -113,15 +113,17 @@ class ConnectBluetooth(threading.Thread):
         loop = asyncio.new_event_loop()  # 이벤트 루프를 얻음
         loop.run_until_complete(self.connect_device())
 class Send_Data(threading.Thread):
-    def __init__(self, data):
+    def __init__(self, print_id, data):
         super().__init__()
         self.bluetooth = Bluetooth()
+        self.print_id = print_id
         self.data = data
 
     async def send_data(self):
         try:
             print("데이터 보내는 중...")
-            encoded_data = self.data.encode()
+            send = "P|" + str(self.print_id) + "|" + self.data
+            encoded_data = send.encode()
             print(f"{encoded_data} : {len(encoded_data)}")
             chunks = [encoded_data[i:i + 65] for i in range(0, len(encoded_data), 65)]
             for chunk in chunks:
@@ -165,6 +167,7 @@ class BluetoothSettingUI:
         window = tk.Tk()
         window.geometry("400x300")
         window.title("블루투스 프린터 설정")
+        window.resizable(False, False)
 
         device_label = tk.Label(window, text="검색된 블루투스 기기:")
         device_label.pack()

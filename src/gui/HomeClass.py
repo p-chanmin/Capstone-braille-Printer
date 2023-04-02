@@ -8,7 +8,7 @@ import tkinter.messagebox as msgbox
 
 from src.gui.BluetoothSettingUI import BluetoothSettingUI, Send_Data, Bluetooth
 from src.gui.SpecialCharacterUIClass import SpecialCharacterUI
-from src.braille.braillePrint import CheckText, transform_to_print
+from src.braille.braillePrint import CheckText, transform_to_print, get_line_page
 from src.braille.translate import translate
 from src.braille import braillePrint
 
@@ -20,7 +20,7 @@ from src.gui.DocumentPrintModifyClass import DocumentPrintModify
 from src.gui.DocumentPrintDeleteClass import DocumentPrintDelete
 from src.gui.CharThreadClass import CharThread
 from src.gui.UserUIClass import UserUI
-from src.gui.serverFunction import get_braille
+from src.gui.serverFunction import get_braille, submit_print_document
 
 
 class Home():
@@ -394,13 +394,23 @@ class Home():
         if(Bluetooth().client is None):
             print("연결된 프린터가 없습니다.")
             return
-        braille = self.braille_place.get("1.0", END)
-        if braille[-1] == "\n":
-            braille = braille[:-1]
+
+        content = self.text_place.get("1.0", END)[:-1]
+
+        if len(content) >= 12:
+            title = content[:12]+"..."
+        else:
+            title = content
+
+        braille = self.braille_place.get("1.0", END)[:-1]
+
         data = transform_to_print(braille)
-        bluetooth = Send_Data(data)
+        line, page = get_line_page(data)
+        print_id = submit_print_document(self.user, title, content, page)
+
+        bluetooth = Send_Data(print_id, data)
         bluetooth.start()
-        # pass
+        pass
 
     ############################# process function ###################################
     def start(self):

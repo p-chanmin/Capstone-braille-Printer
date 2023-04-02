@@ -129,21 +129,20 @@ def transform_to_print(braille_text):
 
 # print(transform_to_print("⠴⠭⠵⠉⠃⠁⠙⠓⠲⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"))
 
-def get_page(braille_text, vertical = 26):
+def get_line_page(braille_text, vertical = 26):
     line = len(braille_text.split("\n"))
-    return line//vertical if(line%vertical == 0) else line//vertical + 1
+    return line, line//vertical if(line%vertical == 0) else line//vertical + 1
 
-# test_text = "asdgaaaaaaaaaaaaaaaaaaaaaaasdffffffff"
-# # str = translate(test_text)
-# str =  ""
-# print(str)
-# result_str = transfrom_to_braille(str, 32)
-# # result_data = transform_to_print(result_str)
+# test_text = "미국에서는 호칭을 부를 때, Mr.나 Mrs.를 사용한다."
+# str = translate(test_text)
+# # str =  "asdgaaaaaaaaaaaaaaaaaaaaaaasdffffffff"
+# # print(str)
+# result_str = transfrom_to_braille(str, 32)s
+# result_data = transform_to_print(result_str)
 #
-# print(f"({result_str})")
+# print(result_str)
 # print()
-# # for i in result_data:
-# #     print(f"{len(i)} : {i}")
-# # print(get_page(result_str))
+# print(result_data)
+
 
 
