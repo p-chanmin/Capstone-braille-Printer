@@ -32,24 +32,28 @@ class SearchBluetooth(threading.Thread):
 class ConnectBluetooth(threading.Thread):
     __instance = None  # Singleton 인스턴스를 저장할 클래스 변수
 
-    def __new__(cls, bluetooth_ui, home_ui):
+    def __new__(cls, bluetooth_ui, home_ui, print_init_ui):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
             if (bluetooth_ui is not None):
                 cls.__instance.bluetooth_ui = bluetooth_ui
             if (home_ui is not None):
                 cls.__instance.home_ui = home_ui
+            if (print_init_ui is not None):
+                cls.__instance.print_init_ui = print_init_ui
             cls.__instance.isPrinting = False
             cls.__instance.line = 0
             cls.__instance.current_line = 0
         return cls.__instance
 
-    def __init__(self, bluetooth_ui, home_ui):
+    def __init__(self, bluetooth_ui, home_ui, print_init_ui):
         super().__init__()
         if (bluetooth_ui is not None):
             self.bluetooth_ui = bluetooth_ui
         if (home_ui is not None):
             self.home_ui = home_ui
+        if (print_init_ui is not None):
+            self.print_init_ui = print_init_ui
         self.bluetooth = Bluetooth()
         self.isPrinting = False
         self.line = 0
@@ -102,6 +106,7 @@ class ConnectBluetooth(threading.Thread):
                     self.bluetooth.client = BleakClient(address, passkey=self.bluetooth_ui.password_entry.get())
                     await self.bluetooth.client.connect()
                     print(f"Connected to {selected_device}")
+                    self.bluetooth.name = selected_device
                     # 연결 완료 시
                     self.bluetooth_ui.homeclassInstance.printer_text.set(f"프린터 : {selected_device}")
                     self.bluetooth_ui.connect_text.set("블루투스 연결 상태: 연결됨")
@@ -156,7 +161,7 @@ class Send_Data(threading.Thread):
 
     async def send_data(self):
         try:
-            connect = ConnectBluetooth(None, None)
+            connect = ConnectBluetooth(None, None, None)
             print("데이터 보내는 중...")
 
             data_list = self.data.split('+')
@@ -204,6 +209,7 @@ class Bluetooth:
             cls.__instance.client = None
             cls.__instance.write_uuid = ''
             cls.__instance.notify_uuid = ''
+            cls.__instance.name = ''
         return cls.__instance
 
 
@@ -255,7 +261,7 @@ class BluetoothSettingUI:
 
         def connect_button_callback():
             self.connect_button.config(state=tk.DISABLED)
-            thread = ConnectBluetooth(self, None)
+            thread = ConnectBluetooth(self, None, None)
             thread.start()
 
         self.search_button = tk.Button(button_frame, text="검색", command=search_button_callback)
