@@ -60,7 +60,10 @@ class ConnectBluetooth(threading.Thread):
         if("Send_Data" == data.decode()):
             print("Send_Data notify 수신, 데이터 전송")
             if(self.current_line % 78 == 0):
-                messagebox.showinfo("용지 교체", "용지 교체를 해주세요.\n용지를 교체하면 확인을 눌러주세요.")
+                if(self.current_line == 0):
+                    messagebox.showinfo("인쇄 시작", "인쇄를 시작합니다.\n용지를 추가하고 확인을 누르면 인쇄가 시작됩니다.")
+                else:
+                    messagebox.showinfo("용지 교체", "용지 교체를 해주세요.\n용지를 교체하면 확인을 눌러주세요.")
                 self.isPrinting = False
             else:
                 self.isPrinting = False
