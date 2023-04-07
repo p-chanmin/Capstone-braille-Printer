@@ -21,7 +21,8 @@ class SearchBluetooth(threading.Thread):
             address = str(device)[:17]
             name = str(device)[19:]
             self.bluetooth_ui.devices[name] = address
-            self.bluetooth_ui.device_listbox.insert(tk.END, name)
+            if(name != "None"):
+                self.bluetooth_ui.device_listbox.insert(tk.END, name)
 
     def run(self):
         loop = asyncio.new_event_loop()  # 이벤트 루프를 얻음
