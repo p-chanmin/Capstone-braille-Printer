@@ -32,24 +32,29 @@ class SearchBluetooth(threading.Thread):
 class ConnectBluetooth(threading.Thread):
     __instance = None  # Singleton 인스턴스를 저장할 클래스 변수
 
-    def __new__(cls, bluetooth_ui, home_ui):
+    def __new__(cls, bluetooth_ui, home_ui, print_init_ui):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
             if (bluetooth_ui is not None):
                 cls.__instance.bluetooth_ui = bluetooth_ui
             if (home_ui is not None):
                 cls.__instance.home_ui = home_ui
+            if (print_init_ui is not None):
+                cls.__instance.print_init_ui = print_init_ui
             cls.__instance.isPrinting = False
             cls.__instance.line = 0
             cls.__instance.current_line = 0
+            cls.__instance.ZeroPoint = 0
         return cls.__instance
 
-    def __init__(self, bluetooth_ui, home_ui):
+    def __init__(self, bluetooth_ui, home_ui, print_init_ui):
         super().__init__()
         if (bluetooth_ui is not None):
             self.bluetooth_ui = bluetooth_ui
         if (home_ui is not None):
             self.home_ui = home_ui
+        if (print_init_ui is not None):
+            self.print_init_ui = print_init_ui
         self.bluetooth = Bluetooth()
         self.isPrinting = False
         self.line = 0
@@ -79,6 +84,14 @@ class ConnectBluetooth(threading.Thread):
             self.current_line = int(data.decode()[4:])
             self.home_ui.p_var.set(self.current_line/self.line*100)
             self.home_ui.progress_bar.update()
+        if("Init" == data.decode()[:4]):
+            self.ZeroPoint = int(data.decode()[4:])
+            self.print_init_ui.current_settings_text.set(f"현재 프린터 설정값: {self.ZeroPoint}")
+        if("TestEnd" == data.decode()):
+            if(self.print_init_ui is not None):
+                self.print_init_ui.test_button.config(state=tk.NORMAL)
+                self.print_init_ui.update_button.config(state=tk.NORMAL)
+
 
 
     async def connect_device(self):
@@ -102,12 +115,15 @@ class ConnectBluetooth(threading.Thread):
                     self.bluetooth.client = BleakClient(address, passkey=self.bluetooth_ui.password_entry.get())
                     await self.bluetooth.client.connect()
                     print(f"Connected to {selected_device}")
+                    self.bluetooth.name = selected_device
                     # 연결 완료 시
                     self.bluetooth_ui.homeclassInstance.printer_text.set(f"프린터 : {selected_device}")
                     self.bluetooth_ui.connect_text.set("블루투스 연결 상태: 연결됨")
                     self.bluetooth_ui.printer_text.set(f"프린터 : {selected_device}")
                     self.bluetooth_ui.connect_button_text.set("연결 해제")
                     self.bluetooth_ui.connect_button.config(state=tk.NORMAL)
+                    if(self.print_init_ui is not None):
+                        self.print_init_ui.connect_text.set(f"연결된 프린터: {selected_device}")
 
                     services = await self.bluetooth.client.get_services()
                     # 서비스내에 있는 캐릭터리스틱 정보 보기
@@ -123,6 +139,11 @@ class ConnectBluetooth(threading.Thread):
 
                     # notify 수신
                     await self.bluetooth.client.start_notify(self.bluetooth.notify_uuid, self.notify_callback)
+
+                    # ZeroPoint 정보 요청
+                    send = ("Z").encode()
+                    await self.bluetooth.client.write_gatt_char(self.bluetooth.write_uuid, bytes(send))
+
                     while self.bluetooth.client.is_connected:
                         await asyncio.sleep(1)
 
@@ -136,6 +157,9 @@ class ConnectBluetooth(threading.Thread):
                         self.bluetooth_ui.connect_button_text.set("연결")
                         self.bluetooth.client = None
                         self.bluetooth_ui.connect_button.config(state=tk.NORMAL)
+                        self.ZeroPoint = 0
+                        if(self.print_init_ui is not None):
+                            self.print_init_ui.current_settings_text.set(f"현재 프린터 설정값: {self.ZeroPoint}")
 
                 except Exception as e:
                         print(f"Failed to connect to {selected_device}: {e}")
@@ -156,7 +180,7 @@ class Send_Data(threading.Thread):
 
     async def send_data(self):
         try:
-            connect = ConnectBluetooth(None, None)
+            connect = ConnectBluetooth(None, None, None)
             print("데이터 보내는 중...")
 
             data_list = self.data.split('+')
@@ -204,6 +228,7 @@ class Bluetooth:
             cls.__instance.client = None
             cls.__instance.write_uuid = ''
             cls.__instance.notify_uuid = ''
+            cls.__instance.name = ''
         return cls.__instance
 
 
@@ -255,7 +280,7 @@ class BluetoothSettingUI:
 
         def connect_button_callback():
             self.connect_button.config(state=tk.DISABLED)
-            thread = ConnectBluetooth(self, None)
+            thread = ConnectBluetooth(self, None, None)
             thread.start()
 
         self.search_button = tk.Button(button_frame, text="검색", command=search_button_callback)

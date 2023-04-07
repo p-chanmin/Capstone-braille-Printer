@@ -7,6 +7,7 @@ from tkinter import filedialog  # 파일 선택 (__all__에 없어서), 파일�
 import tkinter.messagebox as msgbox
 
 from src.gui.BluetoothSettingUI import BluetoothSettingUI, Send_Data, Bluetooth, ConnectBluetooth
+from src.gui.PrintInitialClass import PrintInitialClass
 from src.gui.SpecialCharacterUIClass import SpecialCharacterUI
 from src.braille.braillePrint import CheckText, transform_to_print, get_line_page
 from src.braille.translate import translate
@@ -25,7 +26,7 @@ from src.gui.serverFunction import get_braille, submit_print_document
 
 class Home():
     def __init__(self, user):
-        ConnectBluetooth(None, self)
+        ConnectBluetooth(None, self, None)
         self.user = user
         self.__window = self.__createUI()
 
@@ -52,6 +53,7 @@ class Home():
 
         menu_2 = Menu(menu, tearoff=0)
         menu_2.add_command(label="블루투스 프린터 설정", command=lambda: self.createbluetoothSetting())
+        menu_2.add_command(label="프린터 설정값 변경", command=lambda: self.createPrintInitial())
         menu.add_cascade(label="설정", menu=menu_2)
 
         menu_3 = Menu(menu, tearoff=0)
@@ -271,6 +273,9 @@ class Home():
     # 블루투스 연결 GUI
     def createbluetoothSetting(self):
         BluetoothSettingUI(self).start()
+
+    def createPrintInitial(self):
+        PrintInitialClass().start()
 
     ############################# right button function ###################################
     def check_braille_grammar(self):
