@@ -38,10 +38,16 @@ class ConnectBluetooth(threading.Thread):
             cls.__instance = super().__new__(cls)
             if (bluetooth_ui is not None):
                 cls.__instance.bluetooth_ui = bluetooth_ui
+            else:
+                cls.__instance.bluetooth_ui = None
             if (home_ui is not None):
                 cls.__instance.home_ui = home_ui
+            else:
+                cls.__instance.home_ui = None
             if (print_init_ui is not None):
                 cls.__instance.print_init_ui = print_init_ui
+            else:
+                cls.__instance.print_init_ui = None
             cls.__instance.isPrinting = False
             cls.__instance.line = 0
             cls.__instance.current_line = 0
@@ -52,10 +58,16 @@ class ConnectBluetooth(threading.Thread):
         super().__init__()
         if (bluetooth_ui is not None):
             self.bluetooth_ui = bluetooth_ui
+        else:
+            self.bluetooth_ui = None
         if (home_ui is not None):
             self.home_ui = home_ui
+        else:
+            self.home_ui = None
         if (print_init_ui is not None):
             self.print_init_ui = print_init_ui
+        else:
+            self.print_init_ui = None
         self.bluetooth = Bluetooth()
         self.isPrinting = False
         self.line = 0
@@ -87,7 +99,8 @@ class ConnectBluetooth(threading.Thread):
             self.home_ui.progress_bar.update()
         if("Init" == data.decode()[:4]):
             self.ZeroPoint = int(data.decode()[4:])
-            self.print_init_ui.current_settings_text.set(f"현재 프린터 설정값: {self.ZeroPoint}")
+            if (self.print_init_ui is not None):
+                self.print_init_ui.current_settings_text.set(f"현재 프린터 설정값: {self.ZeroPoint}")
         if("TestEnd" == data.decode()):
             if(self.print_init_ui is not None):
                 self.print_init_ui.test_button.config(state=tk.NORMAL)
@@ -123,6 +136,7 @@ class ConnectBluetooth(threading.Thread):
                     self.bluetooth_ui.printer_text.set(f"프린터 : {selected_device}")
                     self.bluetooth_ui.connect_button_text.set("연결 해제")
                     self.bluetooth_ui.connect_button.config(state=tk.NORMAL)
+                    print(self.print_init_ui)
                     if(self.print_init_ui is not None):
                         self.print_init_ui.connect_text.set(f"연결된 프린터: {selected_device}")
 
