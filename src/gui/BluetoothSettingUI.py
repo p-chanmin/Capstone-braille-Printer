@@ -44,7 +44,7 @@ class ConnectBluetooth(threading.Thread):
                 cls.__instance.home_ui = home_ui
             else:
                 cls.__instance.home_ui = None
-            if (print_init_ui is not None):
+            if (home_ui is not None):
                 cls.__instance.print_init_ui = print_init_ui
             else:
                 cls.__instance.print_init_ui = None
@@ -56,12 +56,14 @@ class ConnectBluetooth(threading.Thread):
 
     def __init__(self, bluetooth_ui, home_ui, print_init_ui):
         super().__init__()
-        if (self.bluetooth_ui is None):
+        print(f"init 호출, print_init_ui : {print_init_ui}")
+        if (bluetooth_ui is not None):
             self.bluetooth_ui = bluetooth_ui
-        if (self.home_ui is None):
+        if (home_ui is not None):
             self.home_ui = home_ui
-        if (self.print_init_ui is None):
+        if (print_init_ui is not None):
             self.print_init_ui = print_init_ui
+        print(f"init 호출, self.print_init_ui : {self.print_init_ui}")
         self.bluetooth = Bluetooth()
         self.isPrinting = False
         self.line = 0
@@ -96,9 +98,14 @@ class ConnectBluetooth(threading.Thread):
             if (self.print_init_ui is not None):
                 self.print_init_ui.current_settings_text.set(f"현재 프린터 설정값: {self.ZeroPoint}")
         if("TestEnd" == data.decode()):
-            if(self.print_init_ui is not None):
-                self.print_init_ui.test_button.config(state=tk.NORMAL)
-                self.print_init_ui.update_button.config(state=tk.NORMAL)
+            try:
+                if(self.print_init_ui is not None):
+                    self.print_init_ui.test_button.config(state=tk.NORMAL)
+                    self.print_init_ui.update_button.config(state=tk.NORMAL)
+            except Exception as e:
+                print("err 발생")
+                print(e)
+                print(f"self.print_init_ui : {self.print_init_ui}")
 
 
 

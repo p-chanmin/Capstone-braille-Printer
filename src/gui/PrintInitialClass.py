@@ -6,10 +6,10 @@ from tkinter import messagebox
 from src.gui.BluetoothSettingUI import Bluetooth, ConnectBluetooth
 
 class InitTest(threading.Thread):
-    def __init__(self):
+    def __init__(self, ui):
         super().__init__()
         self.bluetooth = Bluetooth()
-        self.connect = ConnectBluetooth(None, None, None)
+        self.connect = ConnectBluetooth(None, None, ui)
 
     async def init_test(self):
         print("Init_test...")
@@ -28,10 +28,10 @@ class InitTest(threading.Thread):
         loop.close()
 
 class SetInit(threading.Thread):
-    def __init__(self, point):
+    def __init__(self, point, ui):
         super().__init__()
         self.bluetooth = Bluetooth()
-        self.connect = ConnectBluetooth(None, None, None)
+        self.connect = ConnectBluetooth(None, None, ui)
         self.point = point
 
     async def init_set(self):
@@ -89,7 +89,7 @@ class PrintInitialClass:
             if(self.bluetooth.client is not None and self.bluetooth.client.is_connected):
                 self.test_button.config(state=tk.DISABLED)
                 self.update_button.config(state=tk.DISABLED)
-                thread = InitTest()
+                thread = InitTest(self)
                 thread.start()
             else:
                 messagebox.showinfo("연결 프린터 없음", "연결된 프린터가 없습니다.")
@@ -111,7 +111,7 @@ class PrintInitialClass:
                 if (self.bluetooth.client is not None and self.bluetooth.client.is_connected):
                     self.test_button.config(state=tk.DISABLED)
                     self.update_button.config(state=tk.DISABLED)
-                    thread = SetInit(p)
+                    thread = SetInit(p, self)
                     thread.start()
                 else:
                     messagebox.showinfo("연결 프린터 없음", "연결된 프린터가 없습니다.")
