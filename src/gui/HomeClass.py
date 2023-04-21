@@ -193,7 +193,7 @@ class Home():
         if historyList is None or len(historyList) == 0:
             msgbox.showerror(title="불러오기 실패", message="불러오기를 실패했습니다.")
         else:
-            uInfo = DocumentPrintDelete(self.user, historyList)
+            uInfo = DocumentPrintDelete(self.user, historyList, self)
             uInfo.start()
 
     def more_my_information_function(self):

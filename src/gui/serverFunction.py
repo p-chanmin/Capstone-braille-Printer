@@ -130,6 +130,19 @@ def alter_print_document(user, tmp_id, tmp_state):
     return True
   return False
 
+def load_print_document(user, id):
+  url = f'{ENDPOINT}/api/print/content'
+
+  token = user.getToken()
+
+  headers = {"token": token}
+  data={"id": id}
+  response = requests.request("GET", url, headers=headers, data=data)
+
+  if response.status_code == 200:
+    return (True, response.json()['content'], response.json()['braille'])
+  return (False, None, None)
+
 def delete_print_document(user, tmp_id):
   url = f'{ENDPOINT}/api/print'
 

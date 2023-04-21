@@ -6,11 +6,12 @@ from src.gui import serverFunction
 
 
 class DocumentPrintDelete:
-    def __init__(self, user, historyList):
+    def __init__(self, user, historyList, homeUI):
         self.__user = user
         self.__ids = []
         self.historyList = historyList
         self.size = len(historyList)
+        self.homeUI = homeUI
         self.__window = self.__createUI()
 
     def __createUI(self):
@@ -67,9 +68,31 @@ class DocumentPrintDelete:
         self.combobox = ttk.Combobox(modify_frame, height=15, values=self.__ids)
         self.combobox.pack(pady=3)
         self.combobox.set("id 선택")
-        login_button = Button(master=modify_frame, text="삭제하기 확인", width=10, command=self.modify)
-        login_button.pack(pady=3)
+        delete_button = Button(master=modify_frame, text="삭제하기", width=10, command=self.modify)
+        delete_button.pack(pady=3)
+
+        load_button = Button(master=modify_frame, text="불러오기", width=10, command=self.load)
+        load_button.pack(pady=3)
+
         return window
+
+    def load(self):
+        user = self.__user
+        selected_id = self.combobox.get() #문자열
+        print(selected_id)
+        result = serverFunction.load_print_document(user, selected_id)
+        print(result)
+        if result[0]:
+            self.homeUI.text_place.delete("1.0", END)
+            self.homeUI.text_place.insert(END, result[1])
+            self.homeUI.braille_place.config(state="normal")
+            self.homeUI.braille_place.delete("1.0", END)
+            self.homeUI.braille_place.insert(END, result[2])
+            self.homeUI.braille_place.config(state="disabled")
+
+            msgbox.showinfo(title="불러오기 성공", message="불러오기 성공")
+        else:
+            msgbox.showerror(title="불러오기 실패", message="불러오기 실패")
 
     def modify(self):
         user = self.__user
