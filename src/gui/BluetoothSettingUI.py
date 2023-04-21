@@ -56,14 +56,12 @@ class ConnectBluetooth(threading.Thread):
 
     def __init__(self, bluetooth_ui, home_ui, print_init_ui):
         super().__init__()
-        print(f"init 호출, print_init_ui : {print_init_ui}")
         if (bluetooth_ui is not None):
             self.bluetooth_ui = bluetooth_ui
         if (home_ui is not None):
             self.home_ui = home_ui
         if (print_init_ui is not None):
             self.print_init_ui = print_init_ui
-        print(f"init 호출, self.print_init_ui : {self.print_init_ui}")
         self.bluetooth = Bluetooth()
         self.isPrinting = False
         self.line = 0
