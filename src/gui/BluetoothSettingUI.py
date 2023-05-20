@@ -5,6 +5,7 @@ import threading
 from bleak import BleakScanner
 from bleak import BleakClient
 import time
+import datetime
 
 from src.gui.serverFunction import alter_print_document
 
@@ -55,6 +56,8 @@ class ConnectBluetooth(threading.Thread):
             cls.__instance.line = 0
             cls.__instance.current_line = 0
             cls.__instance.ZeroPoint = 0
+            cls.__instance.start_time = None
+            cls.__instance.end_time = None
         return cls.__instance
 
     def __init__(self, bluetooth_ui, home_ui, print_init_ui):
@@ -69,6 +72,8 @@ class ConnectBluetooth(threading.Thread):
         self.isPrinting = False
         self.line = 0
         self.current_line = 0
+        self.start_time = None
+        self.end_time = None
 
     async def notify_callback(self, sender, data):
         print(f"Received notification :{data.decode()}")
@@ -77,6 +82,7 @@ class ConnectBluetooth(threading.Thread):
             if(self.current_line % 78 == 0):
                 if(self.current_line == 0):
                     messagebox.showinfo("인쇄 시작", "인쇄를 시작합니다.\n용지를 추가하고 확인을 누르면 인쇄가 시작됩니다.")
+                    self.start_time = time.time()
                 else:
                     messagebox.showinfo("용지 교체", "용지 교체를 해주세요.\n용지를 교체하면 확인을 눌러주세요.")
                 self.isPrinting = False
@@ -93,9 +99,13 @@ class ConnectBluetooth(threading.Thread):
             
             # 서버 상태 변경
             alter_print_document(self.home_ui.user, id, "인쇄 완료")
-        
-            print(f"Complete_Print... print_id = {id}")
-            messagebox.showinfo("인쇄 완료", "인쇄가 완료되었습니다.")
+
+            self.end_time = time.time()
+            sec = (self.end_time - self.start_time)
+            total_time = str(datetime.timedelta(seconds=sec)).split(".")[0]
+
+            print(f"Complete_Print... id: {id}, time: {total_time}")
+            messagebox.showinfo("인쇄 완료", f"인쇄가 완료되었습니다.\n인쇄 시간 : {total_time}")
         if("Line" == data.decode()[:4]):
             self.current_line = int(data.decode()[4:])
             self.home_ui.p_var.set(self.current_line/self.line*100)
