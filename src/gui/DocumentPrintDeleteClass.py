@@ -42,21 +42,22 @@ class DocumentPrintDelete:
         # "page": 3,
         # "state": "인쇄중",
         # "submit_at": "2023-02-23T15:42:55.000Z"
+        self.text_place.insert(END, "================================================================================\n\n")
         for history in self.historyList:
             id = history['id']
             self.__ids.append(id)
             title = history['title']
             page = history['page']
             state = history['state']
-            submit_at = history['submit_at']
+            submit_at = history['submit_at'][:10] + " " + history['submit_at'][11:19]
             string = \
             f'\
-            id:       {id}\
-            title:      {title}\n\
-            page:       {page}\n\
-            state:      {state}\n\
-            submit_at:  {submit_at}\n\
-            ===============================\n\n\n'
+            id:\t\t\t{id}\n\
+            title:\t\t\t{title}\n\
+            page:\t\t\t{page}\n\
+            state:\t\t\t{state}\n\
+            submit_at:\t\t{submit_at}\n\
+            \n================================================================================\n\n'
             self.text_place.insert(END, string)
 
         self.text_place.config(state='disabled')
@@ -107,7 +108,7 @@ class DocumentPrintDelete:
 
 
     def update(self):
-        historyList = serverFunction.get_print_documents(self.__user)
+        historyList = sorted(serverFunction.get_print_documents(self.__user), key=lambda x: x["id"], reverse=True)
 
         # 못받아오면 경고 // 아무것도 없으면 경고
         if historyList is None or len(historyList) == 0:
@@ -123,21 +124,22 @@ class DocumentPrintDelete:
         print(self.text_place.get("1.0",END))
         print(historyList)
 
+        self.text_place.insert(END,"================================================================================\n\n")
         for history in historyList:
             id = history['id']
             self.__ids.append(id)
             title = history['title']
             page = history['page']
             state = history['state']
-            submit_at = history['submit_at']
+            submit_at = history['submit_at'][:10] + " " + history['submit_at'][11:19]
             string = \
             f'\
-            id:         {id}\n\
-            title:      {title}\n\
-            page:       {page}\n\
-            state:      {state}\n\
-            submit_at:  {submit_at}\n\
-            ===============================\n\n\n'
+            id:\t\t\t{id}\n\
+            title:\t\t\t{title}\n\
+            page:\t\t\t{page}\n\
+            state:\t\t\t{state}\n\
+            submit_at:\t\t{submit_at}\n\
+            \n================================================================================\n\n'
             self.text_place.insert(END, string)
 
         self.text_place.config(state='disabled')

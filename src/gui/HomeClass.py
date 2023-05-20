@@ -187,7 +187,7 @@ class Home():
 
     def print_information_delete_function(self):
         # historyList = [{"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}]
-        historyList = serverFunction.get_print_documents(self.user)
+        historyList = sorted(serverFunction.get_print_documents(self.user), key=lambda x: x["id"], reverse=True)
 
         # 못받아오면 경고 // 아무것도 없으면 경고
         if historyList is None or len(historyList) == 0:
