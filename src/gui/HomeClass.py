@@ -401,10 +401,10 @@ class Home():
             print("연결된 프린터가 없습니다.")
             return
 
-        content = self.text_place.get("1.0", END)[:-1]
+        content = self.text_place.get("1.0", END)[:-1].replace("\n", " ").lstrip()
 
-        if len(content) >= 12:
-            title = content[:12]+"..."
+        if len(content) >= 25:
+            title = content[:25]+"..."
         else:
             title = content
 
