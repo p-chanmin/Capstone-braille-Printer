@@ -403,12 +403,13 @@ class Home():
             print("연결된 프린터가 없습니다.")
             return
 
-        content = self.text_place.get("1.0", END)[:-1].replace("\n", " ").lstrip()
+        content = self.text_place.get("1.0", END)[:-1]
+        title = content.replace("\n", " ").lstrip()
 
-        if len(content) >= 25:
-            title = content[:25]+"..."
+        if len(title) >= 25:
+            title = title[:25]+"..."
         else:
-            title = content
+            title = title
 
         braille = self.braille_place.get("1.0", END)[:-1]
 
