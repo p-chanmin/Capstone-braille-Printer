@@ -189,12 +189,14 @@ class Home():
         # historyList = [{"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}, {"title": "test document title", "page": 3, "state": "인쇄중", "submit_at": "2023-02-23T15:42:55.000Z"}]
         historyList = sorted(serverFunction.get_print_documents(self.user), key=lambda x: x["id"], reverse=True)
 
-        # 못받아오면 경고 // 아무것도 없으면 경고
-        if historyList is None or len(historyList) == 0:
-            msgbox.showerror(title="불러오기 실패", message="불러오기를 실패했습니다.")
-        else:
-            uInfo = DocumentPrintDelete(self.user, historyList, self)
-            uInfo.start()
+        # # 못받아오면 경고 // 아무것도 없으면 경고
+        # if historyList is None or len(historyList) == 0:
+        #     msgbox.showerror(title="불러오기 실패", message="불러오기를 실패했습니다.")
+        # else:
+        #     uInfo = DocumentPrintDelete(self.user, historyList, self)
+        #     uInfo.start()
+        uInfo = DocumentPrintDelete(self.user, historyList, self)
+        uInfo.start()
 
     def more_my_information_function(self):
         # None or dict
