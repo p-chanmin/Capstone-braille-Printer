@@ -6,6 +6,9 @@ from bleak import BleakScanner
 from bleak import BleakClient
 import time
 
+from src.gui.serverFunction import alter_print_document
+
+
 class SearchBluetooth(threading.Thread):
     def __init__(self, bluetooth_ui):
         super().__init__()
@@ -79,14 +82,20 @@ class ConnectBluetooth(threading.Thread):
                 self.isPrinting = False
             else:
                 self.isPrinting = False
-        if("Complete_Print" == data.decode()):
+        if(len(data.decode()) >= 13 and "Complete_Print" == data.decode()[:14]):
             self.home_ui.print_button.config(state=tk.NORMAL)
-            messagebox.showinfo("인쇄 완료", "인쇄가 완료되었습니다.")
             self.line = 0
             self.current_line = 0
             self.home_ui.p_var.set(0)
             self.home_ui.progress_bar.update()
-            print("Complete_Print...")
+
+            id = data.decode()[15:]
+            
+            # 서버 상태 변경
+            alter_print_document(self.home_ui.user, id, "인쇄 완료")
+        
+            print(f"Complete_Print... print_id = {id}")
+            messagebox.showinfo("인쇄 완료", "인쇄가 완료되었습니다.")
         if("Line" == data.decode()[:4]):
             self.current_line = int(data.decode()[4:])
             self.home_ui.p_var.set(self.current_line/self.line*100)
