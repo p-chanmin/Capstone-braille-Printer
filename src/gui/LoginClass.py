@@ -41,7 +41,7 @@ class Login:
     self.__email_entry = Entry(width=35)
     self.__email_entry.grid(row=1, column=1)
 
-    self.__password_entry = Entry(width=35)
+    self.__password_entry = Entry(show="*", width=35)
     self.__password_entry.grid(row=2, column=1)
 
     #Button

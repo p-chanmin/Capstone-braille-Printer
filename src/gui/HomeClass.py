@@ -432,6 +432,6 @@ class Home():
         self.__window.quit()
 
 #####################################################################################
-user = User("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMzLCJpYXQiOjE2Nzg5NTg5Mzh9.46KCsXgQ1sXmpJQlfPNGetuO97NUOW0qDFcHVYwp6e4","aaa","aaa")
-home = Home(user)
-home.start()
+# user = User("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMzLCJpYXQiOjE2Nzg5NTg5Mzh9.46KCsXgQ1sXmpJQlfPNGetuO97NUOW0qDFcHVYwp6e4","aaa","aaa")
+# home = Home(user)
+# home.start()
