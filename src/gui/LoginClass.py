@@ -1,5 +1,6 @@
 import tkinter.messagebox as msgbox
 from tkinter import *
+import os
 
 from src.gui import StateClass, serverFunction
 from src.gui.StateClass import State
@@ -23,8 +24,12 @@ class Login:
 
     window.resizable(False, False)
 
-    canvas = Canvas(window, width=200, height=200, background="white")
-    image = PhotoImage(file='./src/images/logo.png')
+    img_path = os.getcwd() + "\\src\\images\\logo.png"
+
+    image = PhotoImage(file=img_path)
+
+    canvas = Label(window, width=250, height=250, image=image)
+    canvas.image = image
     # canvas.create_image(100,100,image=image)
     canvas.grid(row=0, column=1)
 
