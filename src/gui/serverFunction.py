@@ -1,7 +1,8 @@
 import tkinter.messagebox as msgbox
 import requests
 
-ENDPOINT = "http://43.200.80.26:3000"
+# ENDPOINT = "http://43.200.80.26:3000"
+ENDPOINT = "http://3.35.229.203:3000"
 
 ########## createAddr Class ##########
 
